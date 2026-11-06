@@ -1,25 +1,27 @@
-# SRM EEE Academic Session & Advisory Communication Portal
+# SRM EEE Academic Session & Advisory Communication Portal (React + TypeScript)
 
 > **Official Department Portal for Academic Advisory, Seminar Scheduling & Verified Student Email Dispatches**  
 > **Faculty Principal:** Prof. of Practice Engr. Krishnavel, Senior Faculty Advisor  
-> **Department:** Department of Electrical & Electronics Engineering (SRM EEE), SRM Institute of Science & Technology
+> **Department:** Department of Electrical & Electronics Engineering (SRM EEE), SRM Institute of Science & Technology  
+> **Stack:** React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Express, Nodemailer, Supabase
 
 ---
 
 ## Overview
 
-The **Academic Session & Advisory Communication Portal** enables faculty to schedule technical seminars, capstone advisory sessions, and departmental convocations with direct email dispatches to enrolled students and faculty members. 
+The **Academic Session & Advisory Communication Portal** is a full-stack **TypeScript and React.js** web application enabling faculty to schedule technical seminars, capstone advisory sessions, and departmental convocations with direct email dispatches to enrolled students and faculty members.
 
-It features an unslopped, academic craft UI, real-time student selection roster, automated RFC-5545 `.ics` calendar invitation generation, and a verified Google SMTP mail relay.
+It features an unslopped, academic craft UI, real-time student selection roster, automated RFC-5545 `.ics` calendar invitation generation, and a verified Google SMTP mail relay (`srmeeelibraray@gmail.com`).
 
 ---
 
 ## Key Features
 
-- **Personalized Faculty Interface:** Built for Prof. Krishnavel with institutional credentials, portrait integration, and department emblems.
-- **Selective Student Dispatch:** Interactive roster allowing faculty to filter students by year, batch, or capstone group (e.g. Group 04, 09, 12), select individual students with checkboxes, or add custom external recipient email addresses.
+- **Built with React & TypeScript:** Built with React 19, TypeScript, React Router, and Tailwind CSS.
+- **Personalized Faculty Interface:** Built for Prof. Krishnavel with institutional credentials, portrait integration, and SRM EEE department badges.
+- **Interactive Student Selection Roster:** Filter students by year, batch, or capstone group (e.g. Group 04, 09, 12), select individual students with checkboxes, or add custom external recipient email addresses.
 - **Authenticated SMTP Relay:** Dispatches live HTML emails with attached iCalendar (`.ics`) invites and embedded faculty portrait signatures via authenticated Google SMTP relay (`srmeeelibraray@gmail.com`).
-- **Telemetry & Logging:** Real-time delivery rate tracking, bounce logging, and audit records in `data/dispatches.json`.
+- **Telemetry & Logging:** Real-time delivery tracking, bounce logging, and audit records in `data/dispatches.json`.
 - **Supabase Ready:** Includes `@supabase/supabase-js` configuration and a ready-to-execute schema in `supabase_schema.sql` for quick database sync.
 
 ---
@@ -34,12 +36,18 @@ cd eee
 npm install
 ```
 
-### 2. Launch Server
-Start the Express application on port 3000:
+### 2. Build and Launch
+Build the React TypeScript frontend:
+```bash
+npm run build
+```
+
+Start the application on port 3000:
 ```bash
 npm start
 ```
-Development mode with live file watching:
+
+Or for live development with hot module reloading (HMR):
 ```bash
 npm run dev
 ```
@@ -47,9 +55,9 @@ npm run dev
 The portal will be active at:
 - **Dashboard:** [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
 - **Schedule Session:** [http://localhost:3000/schedule-session](http://localhost:3000/schedule-session)
-- **Email Preview Dialog:** [http://localhost:3000/email-preview-confirmation-dialog](http://localhost:3000/email-preview-confirmation-dialog)
-- **Email Template Inspector:** [http://localhost:3000/student-faculty-email-template](http://localhost:3000/student-faculty-email-template)
-- **Session Archive History:** [http://localhost:3000/session-archive-history](http://localhost:3000/session-archive-history)
+- **Pre-Flight Preview:** [http://localhost:3000/email-preview](http://localhost:3000/email-preview)
+- **Email Template Inspector:** [http://localhost:3000/email-templates](http://localhost:3000/email-templates)
+- **Session Archive History:** [http://localhost:3000/session-archive](http://localhost:3000/session-archive)
 - **Faculty Login:** [http://localhost:3000/login](http://localhost:3000/login)
 
 ---
@@ -73,26 +81,39 @@ When setting up your Supabase project:
 
 ```
 ├── config/
-│   ├── smtp.js                 # Nodemailer transporter & relay credentials
-│   └── supabase.js             # Supabase client wrapper & fallback logic
+│   ├── smtp.ts                 # Nodemailer transporter & relay credentials
+│   └── supabase.ts             # Supabase client wrapper & fallback logic
 ├── data/
 │   ├── students.json           # SRM EEE enrolled student directory
 │   ├── sessions.json           # Scheduled academic sessions & drafts
 │   └── dispatches.json         # Outgoing SMTP transmission logs
 ├── public/
-│   ├── professor_krishnavel.jpg# High-resolution faculty portrait
-│   ├── shared-portal.css       # Unified design system stylesheet
-│   └── shared-portal.js        # Active routing, toasts & calendar helpers
+│   └── professor_krishnavel.jpg# High-resolution faculty portrait
 ├── services/
-│   └── mailer.js               # HTML email builder, .ics generator & dispatch relay
-├── stitch_academic_session_communication_portal/
-│   ├── professor_dashboard/    # Faculty main dashboard & metrics
-│   ├── create_new_session/     # Schedule session & target student picker
-│   ├── email_preview_confirmation_dialog/ # Pre-flight review modal & sender
-│   ├── student_faculty_email_template/    # Responsive email canvas & inspector
-│   ├── session_archive_history/# Historical session records & CSV export
-│   └── professor_login_portal/ # Department authentication portal
-├── server.js                   # Express server & API endpoints
+│   └── mailer.ts               # HTML email builder, .ics generator & dispatch relay
+├── src/
+│   ├── components/
+│   │   └── Header.tsx          # React header with Sir's avatar & navigation
+│   ├── context/
+│   │   └── ToastContext.tsx    # Global notifications toast system
+│   ├── pages/
+│   │   ├── DashboardPage.tsx   # Metrics & upcoming convocations
+│   │   ├── ScheduleSessionPage.tsx # Session form & student picker
+│   │   ├── PreviewConfirmationPage.tsx # Pre-flight review modal
+│   │   ├── EmailTemplatesPage.tsx # 640px responsive mail inspector
+│   │   ├── SessionArchivePage.tsx # Historical ledger & CSV export
+│   │   └── LoginPage.tsx       # Faculty authentication portal
+│   ├── services/
+│   │   └── api.ts              # Typed API communication service
+│   ├── types/
+│   │   └── index.ts            # TypeScript interfaces & definitions
+│   ├── App.tsx                 # Client router & page layout
+│   ├── main.tsx                # React application entry point
+│   └── index.css               # Tailwind CSS & craft styling
+├── server.ts                   # Express server & API endpoints (TypeScript)
+├── vite.config.ts              # Vite configuration & proxy settings
+├── tsconfig.json               # TypeScript compiler options
+├── tailwind.config.js          # Tailwind theme configuration
 ├── supabase_schema.sql         # Production database schema script
 ├── package.json
 └── README.md
@@ -102,5 +123,5 @@ When setting up your Supabase project:
 
 ## License & Attribution
 
-Designed and maintained for **Department of Electrical & Electronics Engineering**, SRM Institute of Science and Technology.
+Designed and maintained for **Department of Electrical & Electronics Engineering**, SRM Institute of Science and Technology.  
 Faculty Principal: Prof. of Practice Engr. Krishnavel.

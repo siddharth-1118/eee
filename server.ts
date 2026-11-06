@@ -1,32 +1,37 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-const { transporter, SMTP_CONFIG } = require('./config/smtp');
-const supabaseManager = require('./config/supabase');
-const { sendAcademicEmail, readDispatches } = require('./services/mailer');
+import { transporter, SMTP_CONFIG } from './config/smtp.js';
+import supabaseManager from './config/supabase.js';
+import { sendAcademicEmail, readDispatches } from './services/mailer.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Paths
-const BASE_PAGES_DIR = path.join(__dirname, 'stitch_academic_session_communication_portal');
 const PUBLIC_DIR = path.join(__dirname, 'public');
+const DIST_DIR = path.join(__dirname, 'dist');
 const SESSIONS_DATA_FILE = path.join(__dirname, 'data', 'sessions.json');
 const STUDENTS_DATA_FILE = path.join(__dirname, 'data', 'students.json');
 
-// Serve static assets from /public and root
 app.use(express.static(PUBLIC_DIR));
 app.use('/public', express.static(PUBLIC_DIR));
-app.use(express.static(BASE_PAGES_DIR));
 
-// Explicit route to serve Sir's portrait reliably
+// Serve compiled React build if available
+if (fs.existsSync(DIST_DIR)) {
+  app.use(express.static(DIST_DIR));
+}
+
+// Serve Prof. Krishnavel's portrait
 app.get('/professor_krishnavel.jpg', (req, res) => {
   const photoPath = path.join(PUBLIC_DIR, 'professor_krishnavel.jpg');
   if (fs.existsSync(photoPath)) {
@@ -37,7 +42,6 @@ app.get('/professor_krishnavel.jpg', (req, res) => {
   }
 });
 
-// Helper: Read & write sessions
 function readSessions() {
   try {
     if (!fs.existsSync(SESSIONS_DATA_FILE)) return [];
@@ -48,7 +52,7 @@ function readSessions() {
   }
 }
 
-function writeSessions(sessions) {
+function writeSessions(sessions: any[]) {
   try {
     fs.writeFileSync(SESSIONS_DATA_FILE, JSON.stringify(sessions, null, 2), 'utf-8');
     return true;
@@ -58,7 +62,6 @@ function writeSessions(sessions) {
   }
 }
 
-// Helper: Read & write students
 function readStudents() {
   try {
     if (!fs.existsSync(STUDENTS_DATA_FILE)) return [];
@@ -69,7 +72,7 @@ function readStudents() {
   }
 }
 
-function writeStudents(students) {
+function writeStudents(students: any[]) {
   try {
     fs.writeFileSync(STUDENTS_DATA_FILE, JSON.stringify(students, null, 2), 'utf-8');
     return true;
@@ -79,36 +82,11 @@ function writeStudents(students) {
   }
 }
 
-// Serve HTML with injected shared styles and scripts
-function sendPage(res, subfolder) {
-  const filePath = path.join(BASE_PAGES_DIR, subfolder, 'code.html');
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).send(`<h3>Portal page not found: ${subfolder}</h3>`);
-  }
-
-  let html = fs.readFileSync(filePath, 'utf-8');
-
-  if (!html.includes('shared-portal.css')) {
-    html = html.replace('</head>', '  <link rel="stylesheet" href="/shared-portal.css"/>\n</head>');
-  }
-
-  if (!html.includes('shared-portal.js')) {
-    html = html.replace('</body>', '  <script src="/shared-portal.js"></script>\n</body>');
-  }
-
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.send(html);
-}
-
-// ==========================================
-// API Routes
-// ==========================================
-
-// Health & System Info
+// API Endpoints
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'online',
-    portal: 'Academic Session & Advisory Communication Portal',
+    portal: 'Academic Session & Advisory Communication Portal (React + TypeScript)',
     faculty: 'Prof. of Practice Engr. Krishnavel',
     department: 'Department of Electrical & Electronics Engineering (SRM EEE)',
     smtpRelay: SMTP_CONFIG.auth.user,
@@ -117,19 +95,18 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Telemetry Stats
 app.get('/api/stats', (req, res) => {
   const sessions = readSessions();
   const students = readStudents();
   const dispatches = readDispatches();
 
-  const upcomingCount = sessions.filter(s => s.status === 'upcoming').length;
-  const completedCount = sessions.filter(s => s.status === 'completed').length;
-  const draftCount = sessions.filter(s => s.status === 'drafts').length;
+  const upcomingCount = sessions.filter((s: any) => s.status === 'upcoming').length;
+  const completedCount = sessions.filter((s: any) => s.status === 'completed').length;
+  const draftCount = sessions.filter((s: any) => s.status === 'drafts').length;
 
   let totalEmailsSent = 0;
-  dispatches.forEach(d => {
-    totalEmailsSent += (d.deliveredCount || 0);
+  dispatches.forEach((d: any) => {
+    totalEmailsSent += d.deliveredCount || 0;
   });
 
   res.json({
@@ -145,20 +122,18 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-// Students API (Selected Students Roster)
 app.get('/api/students', async (req, res) => {
-  if (supabaseManager.isConfigured()) {
+  if (supabaseManager.isConfigured() && supabaseManager.supabase) {
     try {
       const { data, error } = await supabaseManager.supabase.from('students').select('*').order('name');
       if (!error && data && data.length > 0) {
         return res.json(data);
       }
-    } catch (e) {
-      console.warn('Supabase students fetch fallback to local:', e.message);
+    } catch (e: any) {
+      console.warn('Supabase fallback to local students:', e.message);
     }
   }
-  const students = readStudents();
-  res.json(students);
+  res.json(readStudents());
 });
 
 app.post('/api/students', async (req, res) => {
@@ -181,31 +156,32 @@ app.post('/api/students', async (req, res) => {
   students.push(newStudent);
   writeStudents(students);
 
-  if (supabaseManager.isConfigured()) {
+  if (supabaseManager.isConfigured() && supabaseManager.supabase) {
     try {
       await supabaseManager.supabase.from('students').insert([newStudent]);
-    } catch (e) {
-      console.warn('Supabase student insert error:', e.message);
+    } catch (e: any) {
+      console.warn('Supabase student insert fallback:', e.message);
     }
   }
 
   res.status(201).json({ success: true, student: newStudent });
 });
 
-// Sessions API
 app.get('/api/sessions', async (req, res) => {
-  if (supabaseManager.isConfigured()) {
+  if (supabaseManager.isConfigured() && supabaseManager.supabase) {
     try {
-      const { data, error } = await supabaseManager.supabase.from('sessions').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabaseManager.supabase
+        .from('sessions')
+        .select('*')
+        .order('created_at', { ascending: false });
       if (!error && data && data.length > 0) {
         return res.json(data);
       }
-    } catch (e) {
-      console.warn('Supabase sessions fetch fallback:', e.message);
+    } catch (e: any) {
+      console.warn('Supabase sessions fallback:', e.message);
     }
   }
-  const sessions = readSessions();
-  res.json(sessions);
+  res.json(readSessions());
 });
 
 app.post('/api/sessions', async (req, res) => {
@@ -235,7 +211,6 @@ app.post('/api/sessions', async (req, res) => {
   sessions.unshift(newSession);
   writeSessions(sessions);
 
-  // If user requested automatic email dispatch upon creation
   let dispatchResult = null;
   if (req.body.sendMail && req.body.selectedRecipients && req.body.selectedRecipients.length > 0) {
     try {
@@ -243,16 +218,15 @@ app.post('/api/sessions', async (req, res) => {
         recipients: req.body.selectedRecipients,
         session: newSession
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Session dispatch error:', err.message);
     }
   }
 
-  // Save to Supabase if configured
-  if (supabaseManager.isConfigured()) {
+  if (supabaseManager.isConfigured() && supabaseManager.supabase) {
     try {
       await supabaseManager.supabase.from('sessions').insert([newSession]);
-    } catch (e) {
+    } catch (e: any) {
       console.warn('Supabase session insert fallback:', e.message);
     }
   }
@@ -264,7 +238,27 @@ app.post('/api/sessions', async (req, res) => {
   });
 });
 
-// Direct SMTP Dispatch Endpoint
+app.delete('/api/sessions/:id', async (req, res) => {
+  const sessions = readSessions();
+  const index = sessions.findIndex((s: any) => s.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Session not found' });
+  }
+
+  const removed = sessions.splice(index, 1);
+  writeSessions(sessions);
+
+  if (supabaseManager.isConfigured() && supabaseManager.supabase) {
+    try {
+      await supabaseManager.supabase.from('sessions').delete().eq('id', req.params.id);
+    } catch (e: any) {
+      console.warn('Supabase session delete fallback:', e.message);
+    }
+  }
+
+  res.json({ success: true, removed: removed[0] });
+});
+
 app.post('/api/smtp/send', async (req, res) => {
   const { recipients, session } = req.body;
   if (!recipients || (Array.isArray(recipients) && recipients.length === 0)) {
@@ -283,13 +277,12 @@ app.post('/api/smtp/send', async (req, res) => {
     });
 
     res.json(result);
-  } catch (err) {
+  } catch (err: any) {
     console.error('SMTP Send API Error:', err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// SMTP Status
 app.get('/api/smtp/status', (req, res) => {
   transporter.verify((err, success) => {
     if (err) {
@@ -310,7 +303,6 @@ app.get('/api/smtp/status', (req, res) => {
   });
 });
 
-// Supabase Status & Config Update
 app.get('/api/supabase/status', (req, res) => {
   res.json({
     configured: supabaseManager.isConfigured(),
@@ -327,7 +319,6 @@ app.post('/api/supabase/config', (req, res) => {
   res.json(result);
 });
 
-// Authentication
 app.post('/api/auth/login', (req, res) => {
   res.json({
     success: true,
@@ -342,45 +333,22 @@ app.post('/api/auth/login', (req, res) => {
   });
 });
 
-// ==========================================
-// Page Routing
-// ==========================================
-
-app.get('/', (req, res) => {
-  res.redirect('/dashboard');
+// React SPA fallback
+app.use((req, res) => {
+  const indexPath = path.join(DIST_DIR, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).send('React client not built yet. Run npm run build.');
+  }
 });
 
-app.get('/login', (req, res) => {
-  sendPage(res, 'professor_login_portal');
-});
-
-app.get(['/dashboard', '/dashboard-overview'], (req, res) => {
-  sendPage(res, 'professor_dashboard');
-});
-
-app.get(['/schedule-session', '/create-session', '/create_new_session'], (req, res) => {
-  sendPage(res, 'create_new_session');
-});
-
-app.get(['/session-archive-history', '/archive', '/session-archive'], (req, res) => {
-  sendPage(res, 'session_archive_history');
-});
-
-app.get(['/student-faculty-email-template', '/email-templates', '/email-dispatches-templates'], (req, res) => {
-  sendPage(res, 'student_faculty_email_template');
-});
-
-app.get(['/email-preview-confirmation-dialog', '/email-preview', '/preview-confirmation'], (req, res) => {
-  sendPage(res, 'email_preview_confirmation_dialog');
-});
-
-// Start Server
 app.listen(PORT, () => {
   console.log(`================================================================`);
-  console.log(` SRM EEE Academic Advisory Communication Portal Active`);
+  console.log(` SRM EEE Academic Portal Active (TypeScript + React.js SPA)`);
   console.log(` Running on: http://localhost:${PORT}`);
   console.log(` Faculty Principal: Prof. of Practice Engr. Krishnavel`);
-  console.log(` SMTP Relay: ${SMTP_CONFIG.auth.user} (Verified Active)`);
+  console.log(` SMTP Relay: ${SMTP_CONFIG.auth.user} (Active & Verified)`);
   console.log(` Supabase State: ${supabaseManager.isConfigured() ? 'Connected' : 'Ready for credentials'}`);
   console.log(`================================================================`);
 });

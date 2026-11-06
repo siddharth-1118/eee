@@ -1,13 +1,17 @@
-const path = require('path');
-const fs = require('fs');
-const { transporter } = require('../config/smtp');
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { transporter } from '../config/smtp';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const SENDER_NAME = 'Prof. Krishnavel (SRM EEE)';
 const SENDER_EMAIL = 'srmeeelibraray@gmail.com';
 const DISPATCH_LOG_FILE = path.join(__dirname, '..', 'data', 'dispatches.json');
 const PROF_PHOTO_PATH = path.join(__dirname, '..', 'public', 'professor_krishnavel.jpg');
 
-function readDispatches() {
+export function readDispatches() {
   try {
     if (!fs.existsSync(DISPATCH_LOG_FILE)) return [];
     return JSON.parse(fs.readFileSync(DISPATCH_LOG_FILE, 'utf-8'));
@@ -16,7 +20,7 @@ function readDispatches() {
   }
 }
 
-function writeDispatches(logs) {
+export function writeDispatches(logs: any[]) {
   try {
     fs.writeFileSync(DISPATCH_LOG_FILE, JSON.stringify(logs, null, 2), 'utf-8');
   } catch (e) {
@@ -24,11 +28,9 @@ function writeDispatches(logs) {
   }
 }
 
-function generateIcsCalendar(session) {
+export function generateIcsCalendar(session: any) {
   const title = session.title || 'Academic Advisory Session';
   const meetUrl = session.link || 'https://meet.google.com/eng-krish-pract';
-  const dateStr = session.date || 'Scheduled Date';
-  const timeStr = session.time || '15:30 - 17:00 IST';
   const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
   const uid = `acad-${Date.now()}@srmist.edu.in`;
 
@@ -52,7 +54,7 @@ function generateIcsCalendar(session) {
   ].join('\r\n');
 }
 
-function generateHtmlEmail(session, recipientEmail) {
+export function generateHtmlEmail(session: any, recipientEmail: string) {
   const title = session.title || 'Advanced Industrial Robotics & Digital Twin Architecture · Seminar IV';
   const date = session.date || 'Thursday, Oct 24, 2024';
   const time = session.time || '03:30 PM - 05:00 PM IST';
@@ -70,7 +72,6 @@ function generateHtmlEmail(session, recipientEmail) {
 <body style="margin: 0; padding: 24px; background-color: #faf9f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1c1917; line-height: 1.5;">
   <div style="max-width: 620px; margin: 0 auto; background: #ffffff; border: 1px solid #e7e5e4; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
     
-    <!-- Institutional Header -->
     <div style="padding: 20px 24px; border-bottom: 1px solid #f5f5f4; background-color: #ffffff;">
       <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #78716c; font-weight: 600;">
         SRM Institute of Science and Technology · Department of EEE
@@ -80,7 +81,6 @@ function generateHtmlEmail(session, recipientEmail) {
       </div>
     </div>
 
-    <!-- Main Content -->
     <div style="padding: 24px;">
       
       <div style="font-size: 12px; color: #a8a29e; font-family: monospace; margin-bottom: 8px;">
@@ -92,10 +92,9 @@ function generateHtmlEmail(session, recipientEmail) {
       </h1>
 
       <p style="font-size: 13px; color: #44403c; margin: 0 0 20px 0;">
-        Dear Student, you have been designated to attend this upcoming session convened by <strong>Prof. Krishnavel</strong>. Please find the timetable and teleconference coordinates below.
+        Dear Scholar, this formal notice confirms your registration for the upcoming academic session convened by <strong>Prof. of Practice Engr. Krishnavel</strong>.
       </p>
 
-      <!-- Coordinates Box -->
       <div style="background-color: #fbfaf8; border: 1px solid #e7e5e4; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
         <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
           <tr>
@@ -123,7 +122,6 @@ function generateHtmlEmail(session, recipientEmail) {
         </div>
       </div>
 
-      <!-- Syllabus / Agenda Notes -->
       <div style="margin-bottom: 24px;">
         <div style="font-size: 12px; font-weight: 600; color: #1c1917; margin-bottom: 6px;">
           Session Syllabus & Directives:
@@ -133,13 +131,11 @@ function generateHtmlEmail(session, recipientEmail) {
         </div>
       </div>
 
-      <!-- Calendar Notice -->
       <div style="background-color: #f5f5f4; border-radius: 4px; padding: 10px 14px; font-size: 12px; color: #57534e; margin-bottom: 24px;">
-        📅 <strong>Calendar Invitation Attached:</strong> An RFC-5545 <code>.ics</code> calendar file is attached to this notice to sync with your institutional Google or Outlook Calendar.
+        📅 <strong>Calendar Invitation Attached:</strong> An RFC-5545 <code>.ics</code> calendar file is attached to sync with your institutional Google or Outlook Calendar.
       </div>
 
-      <!-- Faculty Signature with Sir's Photo -->
-      <div style="padding-top: 20px; border-top: 1px solid #e7e5e4; display: table; width: 100%;">
+      <div style="padding-top: 20px; border-top: 1px solid #e7e5e4;">
         <table style="border-collapse: collapse;">
           <tr>
             <td style="vertical-align: middle; padding-right: 14px; width: 64px;">
@@ -157,7 +153,6 @@ function generateHtmlEmail(session, recipientEmail) {
 
     </div>
 
-    <!-- Institutional Footer -->
     <div style="padding: 14px 24px; background-color: #fbfaf8; border-top: 1px solid #f5f5f4; font-size: 11px; color: #a8a29e; text-align: center;">
       Academic Advisory Portal · Automated Student Dispatch Relay · SRMIST EEE
     </div>
@@ -168,14 +163,20 @@ function generateHtmlEmail(session, recipientEmail) {
   `;
 }
 
-async function sendAcademicEmail({ recipients, session }) {
+export async function sendAcademicEmail({
+  recipients,
+  session
+}: {
+  recipients: string[] | string;
+  session: any;
+}) {
   if (!recipients) {
     throw new Error('No recipients specified for dispatch');
   }
 
   const recipientList = Array.isArray(recipients)
     ? recipients.filter(Boolean)
-    : recipients.split(',').map(s => s.trim()).filter(Boolean);
+    : recipients.split(',').map((s) => s.trim()).filter(Boolean);
 
   if (recipientList.length === 0) {
     throw new Error('Recipient list is empty');
@@ -184,7 +185,7 @@ async function sendAcademicEmail({ recipients, session }) {
   const title = session.title || 'Academic Session Notification';
   const icsData = generateIcsCalendar(session);
 
-  const attachments = [
+  const attachments: any[] = [
     {
       filename: `${(session.title || 'academic_session').replace(/[^a-zA-Z0-9]/g, '_')}.ics`,
       content: icsData,
@@ -200,8 +201,8 @@ async function sendAcademicEmail({ recipients, session }) {
     });
   }
 
-  const results = [];
-  const errors = [];
+  const results: any[] = [];
+  const errors: any[] = [];
 
   for (const recipient of recipientList) {
     try {
@@ -221,7 +222,7 @@ async function sendAcademicEmail({ recipients, session }) {
         messageId: info.messageId,
         status: 'delivered'
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(`Failed to send to ${recipient}:`, err.message);
       errors.push({
         recipient,
@@ -230,7 +231,6 @@ async function sendAcademicEmail({ recipients, session }) {
     }
   }
 
-  // Record dispatch log
   const dispatches = readDispatches();
   const logEntry = {
     id: `DISP-${Date.now()}`,
@@ -257,10 +257,3 @@ async function sendAcademicEmail({ recipients, session }) {
     dispatchId: logEntry.id
   };
 }
-
-module.exports = {
-  sendAcademicEmail,
-  generateIcsCalendar,
-  generateHtmlEmail,
-  readDispatches
-};
