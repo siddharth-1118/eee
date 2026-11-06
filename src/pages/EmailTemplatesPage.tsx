@@ -24,8 +24,8 @@ export const EmailTemplatesPage: React.FC = () => {
   <tr><td align="center" style="padding:24px;">
     <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e6e2da;border-radius:6px;padding:24px;">
       <tr><td>
-        <h2 style="font-size:16px;color:#1c1917;margin:0 0 8px 0;">Advanced Industrial Robotics - Seminar IV</h2>
-        <p style="font-size:13px;color:#57534e;line-height:1.5;">Date: Thursday, Oct 24, 2024 · 03:30 PM IST</p>
+        <h2 style="font-size:16px;color:#1c1917;margin:0 0 8px 0;">Academic Advisory Session & Teleconference Notice</h2>
+        <p style="font-size:13px;color:#57534e;line-height:1.5;">Date: Scheduled Date & Time (IST)</p>
         <p style="font-size:13px;color:#57534e;"><a href="https://meet.google.com/eng-krish-pract" style="color:#1e3a8a;font-weight:600;">Join Teleconference Gateway</a></p>
         <p style="font-size:11px;color:#78716c;margin-top:16px;">Prof. of Practice Engr. Krishnavel · SRMIST EEE</p>
       </td></tr>
@@ -51,7 +51,7 @@ export const EmailTemplatesPage: React.FC = () => {
       `UID:${Date.now()}@srmist.edu.in`,
       `DTSTAMP:${stamp}`,
       `DTSTART:${stamp}`,
-      'SUMMARY:Advanced Industrial Robotics & Digital Twin Architecture · Seminar IV',
+      'SUMMARY:Official Academic Advisory Session',
       'DESCRIPTION:Conducted by Prof. Krishnavel, Senior Faculty Advisor, SRM EEE.\\nMeeting: https://meet.google.com/eng-krish-pract',
       'LOCATION:https://meet.google.com/eng-krish-pract',
       'ORGANIZER;CN="Prof. Krishnavel":mailto:srmeeelibraray@gmail.com',

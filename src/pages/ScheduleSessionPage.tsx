@@ -1,37 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
+  Send, 
   Calendar, 
   Clock, 
   ExternalLink, 
   Search, 
-  UserPlus, 
-  Send, 
   CheckCircle2, 
-  X,
-  FileCheck,
-  AlertCircle
+  UserPlus, 
+  X, 
+  Users,
+  Plus,
+  ShieldCheck
 } from 'lucide-react';
 import { api } from '../services/api';
 import { Student } from '../types';
 import { useToast } from '../context/ToastContext';
 
 export const ScheduleSessionPage: React.FC = () => {
+  // Recipient and Roster State
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
   const [customEmails, setCustomEmails] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [customEmailInput, setCustomEmailInput] = useState('');
 
-  // Form State
-  const [title, setTitle] = useState('Advanced Industrial Robotics & Digital Twin Architecture - Seminar IV');
-  const [date, setDate] = useState('Thursday, Oct 24, 2024');
-  const [time, setTime] = useState('03:30 PM - 05:00 PM IST');
-  const [link, setLink] = useState('https://meet.google.com/eng-krish-pract');
+  // Register Student Inline Form State
+  const [showAddStudentForm, setShowAddStudentForm] = useState(false);
+  const [newStudentName, setNewStudentName] = useState('');
+  const [newStudentEmail, setNewStudentEmail] = useState('');
+  const [newStudentRegNo, setNewStudentRegNo] = useState('');
+  const [newStudentBatch, setNewStudentBatch] = useState('EEE-A');
+  const [newStudentGroup, setNewStudentGroup] = useState('Group 04');
+
+  // Form State (Blank by default - only filled when professor adds)
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [link, setLink] = useState('');
   const [platform, setPlatform] = useState('meet');
-  const [notes, setNotes] = useState(
-    `Greetings Scholars and Faculty Colleagues,\n\nPlease review the attached research brief on kinematic inverse solvers before joining Seminar IV. We will evaluate real-time multi-robot coordination algorithms, followed by a live demonstration on the Digital Twin testbed in Lab 4B.\n\nAttendance is mandatory for Capstone Groups 04, 09, and 12.`
-  );
+  const [notes, setNotes] = useState('');
 
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
@@ -46,16 +54,13 @@ export const ScheduleSessionPage: React.FC = () => {
       try {
         const data = await api.getStudents();
         setStudents(data);
-        // Default select first 4 students or Group 04
-        const initial = new Set<string>();
-        data.slice(0, 4).forEach((s) => initial.add(s.email));
-        setSelectedEmails(initial);
+        setSelectedEmails(new Set());
       } catch (e) {
-        showToast('Roster Notice', 'Loading students from cached directory', 'info');
+        // Safe fallback
       }
     }
     loadStudents();
-  }, [showToast]);
+  }, []);
 
   const toggleStudent = (email: string) => {
     setSelectedEmails((prev) => {
@@ -67,6 +72,7 @@ export const ScheduleSessionPage: React.FC = () => {
   };
 
   const handleSelectAll = () => {
+    if (students.length === 0) return;
     const all = new Set<string>();
     students.forEach((s) => all.add(s.email));
     setSelectedEmails(all);
@@ -81,6 +87,10 @@ export const ScheduleSessionPage: React.FC = () => {
   const handleSelectGroup = (groupName: string) => {
     const groupEmails = new Set<string>();
     students.filter((s) => s.capstoneGroup === groupName).forEach((s) => groupEmails.add(s.email));
+    if (groupEmails.size === 0) {
+      showToast('Empty Group', `No students found in ${groupName}`, 'info');
+      return;
+    }
     setSelectedEmails(groupEmails);
     showToast(`Selected ${groupName}`, `${groupEmails.size} candidates queued`, 'info');
   };
@@ -93,7 +103,7 @@ export const ScheduleSessionPage: React.FC = () => {
     }
     setCustomEmails((prev) => new Set(prev).add(email));
     setCustomEmailInput('');
-    showToast('Recipient Added', email, 'success');
+    showToast('Recipient Queued', email, 'success');
   };
 
   const removeCustomEmail = (email: string) => {
@@ -104,37 +114,81 @@ export const ScheduleSessionPage: React.FC = () => {
     });
   };
 
+  const handleRegisterStudent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = newStudentName.trim();
+    const email = newStudentEmail.trim().toLowerCase();
+    if (!name || !email || !email.includes('@')) {
+      showToast('Validation Error', 'Name and a valid email are required', 'error');
+      return;
+    }
+
+    try {
+      const res = await api.addStudent({
+        name,
+        email,
+        regNo: newStudentRegNo.trim() || undefined,
+        batch: newStudentBatch,
+        year: 'Final Year UG',
+        capstoneGroup: newStudentGroup
+      });
+
+      if (res.success && res.student) {
+        setStudents((prev) => [...prev, res.student]);
+        setSelectedEmails((prev) => new Set(prev).add(res.student.email));
+        setNewStudentName('');
+        setNewStudentEmail('');
+        setNewStudentRegNo('');
+        setShowAddStudentForm(false);
+        showToast('Student Registered', `${res.student.name} saved to directory`, 'success');
+      }
+    } catch (err: any) {
+      showToast('Error', err.message, 'error');
+    }
+  };
+
   const allRecipients = Array.from(new Set([...Array.from(selectedEmails), ...Array.from(customEmails)]));
 
-  const handlePlatformChange = (p: string) => {
-    setPlatform(p);
-    if (p === 'meet') setLink('https://meet.google.com/eng-krish-pract');
-    else if (p === 'teams') setLink('https://teams.microsoft.com/l/meetup-join/academic-engr');
-    else if (p === 'zoom') setLink('https://zoom.us/j/84920491823');
-    else setLink('Hall C, Advanced Mechatronics Wing');
+  const handlePlatformChange = (pId: string) => {
+    setPlatform(pId);
+    if (!link) {
+      if (pId === 'meet') setLink('https://meet.google.com/eng-krish-pract');
+      if (pId === 'teams') setLink('https://teams.microsoft.com/l/meetup-join/academic-portal');
+      if (pId === 'zoom') setLink('https://zoom.us/j/8842194829');
+      if (pId === 'hybrid') setLink('Hall C, EEE Wing 2 (In-Person)');
+    }
   };
 
   const handleSaveDraft = async () => {
+    if (!title.trim()) {
+      showToast('Title Required', 'Please provide a session title to save as draft', 'warning');
+      return;
+    }
     try {
       await api.createSession({
         title,
-        date,
-        time,
-        link,
+        date: date || 'Date TBD',
+        time: time || 'Time TBD',
+        link: link || 'Link TBD',
         notes,
         status: 'drafts',
-        selectedRecipients: allRecipients,
+        sendMail: false,
         recipientCount: allRecipients.length
       });
       showToast('Draft Saved', 'Session saved to drafts ledger', 'success');
+      navigate('/session-archive');
     } catch (e: any) {
       showToast('Error', e.message, 'error');
     }
   };
 
   const handleConfirmDispatch = async () => {
+    if (!title.trim()) {
+      showToast('Title Required', 'Please enter a session title', 'warning');
+      return;
+    }
     if (allRecipients.length === 0) {
-      showToast('No Recipients', 'Select at least one student recipient', 'warning');
+      showToast('No Recipients', 'Please select or add at least one recipient email', 'warning');
       return;
     }
 
@@ -142,9 +196,9 @@ export const ScheduleSessionPage: React.FC = () => {
     try {
       const res = await api.createSession({
         title,
-        date,
-        time,
-        link,
+        date: date || 'Scheduled Date',
+        time: time || 'Scheduled Time',
+        link: link || 'https://meet.google.com/eng-krish-pract',
         notes,
         status: 'upcoming',
         sendMail: sendRealEmail,
@@ -161,7 +215,7 @@ export const ScheduleSessionPage: React.FC = () => {
           5000
         );
       } else {
-        showToast('Session Scheduled', `${allRecipients.length} students enrolled`, 'success');
+        showToast('Session Scheduled', `${allRecipients.length} student(s) enrolled`, 'success');
       }
 
       setTimeout(() => {
@@ -223,9 +277,10 @@ export const ScheduleSessionPage: React.FC = () => {
                 <input
                   id="sessionTitle"
                   type="text"
+                  placeholder="e.g., Electrical Machines Laboratory Advisory & Review"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full h-9 px-3 bg-white text-stone-900 border border-stone-200 rounded text-sm focus:outline-none focus:border-stone-400"
+                  className="w-full h-9 px-3 bg-white text-stone-900 border border-stone-200 rounded text-sm focus:outline-none focus:border-stone-400 placeholder:text-stone-400"
                 />
               </div>
 
@@ -238,9 +293,10 @@ export const ScheduleSessionPage: React.FC = () => {
                     <input
                       id="sessionDate"
                       type="text"
+                      placeholder="e.g., Thursday, Nov 14, 2024"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      className="w-full h-9 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400"
+                      className="w-full h-9 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400 placeholder:text-stone-400"
                     />
                     <Calendar className="w-4 h-4 text-stone-400 absolute left-2.5 top-2.5 pointer-events-none" />
                   </div>
@@ -254,9 +310,10 @@ export const ScheduleSessionPage: React.FC = () => {
                     <input
                       id="sessionTime"
                       type="text"
+                      placeholder="e.g., 03:30 PM - 05:00 PM IST"
                       value={time}
                       onChange={(e) => setTime(e.target.value)}
-                      className="w-full h-9 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400"
+                      className="w-full h-9 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400 placeholder:text-stone-400"
                     />
                     <Clock className="w-4 h-4 text-stone-400 absolute left-2.5 top-2.5 pointer-events-none" />
                   </div>
@@ -276,18 +333,21 @@ export const ScheduleSessionPage: React.FC = () => {
                   <input
                     id="meetingLink"
                     type="text"
+                    placeholder="e.g., https://meet.google.com/eng-krish-pract"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
-                    className="flex-1 h-9 px-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400"
+                    className="flex-1 h-9 px-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400 placeholder:text-stone-400"
                   />
-                  <a
-                    href={link.startsWith('http') ? link : '#'}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="h-9 px-3 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-medium rounded transition-colors flex items-center gap-1"
-                  >
-                    Test <ExternalLink className="w-3 h-3" />
-                  </a>
+                  {link && link.startsWith('http') && (
+                    <a
+                      href={link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="h-9 px-3 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-medium rounded transition-colors flex items-center gap-1"
+                    >
+                      Test <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
                 </div>
               </div>
 
@@ -327,9 +387,10 @@ export const ScheduleSessionPage: React.FC = () => {
 
             <textarea
               rows={5}
+              placeholder="Enter session agenda, preparation directives, reading materials, or prerequisites for students..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full p-3 bg-white text-stone-900 border border-stone-200 rounded text-xs leading-relaxed focus:outline-none focus:border-stone-400"
+              className="w-full p-3 bg-white text-stone-900 border border-stone-200 rounded text-xs leading-relaxed focus:outline-none focus:border-stone-400 placeholder:text-stone-400"
             />
           </section>
 
@@ -347,62 +408,135 @@ export const ScheduleSessionPage: React.FC = () => {
 
             <div className="border border-stone-200 rounded-lg p-4 bg-[#faf9f6] space-y-4">
               
-              {/* Quick Select Buttons & Search */}
+              {/* Header with Quick Select & Register Student */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
                 <div className="flex flex-wrap items-center gap-1.5 text-xs">
                   <span className="text-stone-500 mr-1 text-[11px]">Quick:</span>
                   <button
                     type="button"
                     onClick={handleSelectAll}
-                    className="px-2.5 py-1 bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 rounded text-[11px] font-medium"
+                    disabled={students.length === 0}
+                    className="px-2.5 py-1 bg-white hover:bg-stone-100 disabled:opacity-40 text-stone-800 border border-stone-200 rounded text-[11px] font-medium"
                   >
                     Select All
                   </button>
                   <button
                     type="button"
                     onClick={handleClearAll}
-                    className="px-2.5 py-1 bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 rounded text-[11px]"
+                    disabled={allRecipients.length === 0}
+                    className="px-2.5 py-1 bg-white hover:bg-stone-100 disabled:opacity-40 text-stone-800 border border-stone-200 rounded text-[11px]"
                   >
                     Clear All
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleSelectGroup('Group 04')}
-                    className="px-2.5 py-1 bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 rounded text-[11px]"
+                    onClick={() => setShowAddStudentForm(!showAddStudentForm)}
+                    className="px-2.5 py-1 bg-stone-900 hover:bg-stone-800 text-white rounded text-[11px] font-medium flex items-center gap-1 ml-1"
                   >
-                    Group 04
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSelectGroup('Group 09')}
-                    className="px-2.5 py-1 bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 rounded text-[11px]"
-                  >
-                    Group 09
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSelectGroup('Group 12')}
-                    className="px-2.5 py-1 bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 rounded text-[11px]"
-                  >
-                    Group 12
+                    <Plus className="w-3 h-3" /> Register Student
                   </button>
                 </div>
 
-                <div className="relative w-full sm:w-60">
-                  <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-2.5 pointer-events-none" />
-                  <input
-                    type="text"
-                    placeholder="Filter by name, reg no..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-8 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400"
-                  />
-                </div>
+                {students.length > 0 && (
+                  <div className="relative w-full sm:w-60">
+                    <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-2.5 pointer-events-none" />
+                    <input
+                      type="text"
+                      placeholder="Filter roster..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full h-8 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400"
+                    />
+                  </div>
+                )}
               </div>
+
+              {/* Inline Student Registration Form */}
+              {showAddStudentForm && (
+                <form onSubmit={handleRegisterStudent} className="p-4 bg-white border border-stone-300 rounded-md space-y-3">
+                  <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+                    <span className="text-xs font-semibold text-stone-900">Add Student to Institutional Directory</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddStudentForm(false)}
+                      className="text-stone-400 hover:text-stone-600"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-medium text-stone-600 mb-1">Full Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., Sai Siddharth Vooka"
+                        value={newStudentName}
+                        onChange={(e) => setNewStudentName(e.target.value)}
+                        className="w-full h-8 px-2.5 text-xs border border-stone-200 rounded bg-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-stone-600 mb-1">Official Email Address</label>
+                      <input
+                        type="email"
+                        placeholder="e.g., student@srmist.edu.in"
+                        value={newStudentEmail}
+                        onChange={(e) => setNewStudentEmail(e.target.value)}
+                        className="w-full h-8 px-2.5 text-xs border border-stone-200 rounded bg-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-stone-600 mb-1">Registration No. (Optional)</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., RA2111005010001"
+                        value={newStudentRegNo}
+                        onChange={(e) => setNewStudentRegNo(e.target.value)}
+                        className="w-full h-8 px-2.5 text-xs border border-stone-200 rounded bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-stone-600 mb-1">Batch / Capstone Group</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., Group 04 / EEE-A"
+                        value={newStudentGroup}
+                        onChange={(e) => setNewStudentGroup(e.target.value)}
+                        className="w-full h-8 px-2.5 text-xs border border-stone-200 rounded bg-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddStudentForm(false)}
+                      className="px-3 py-1.5 text-xs text-stone-600 hover:text-stone-800"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-3.5 py-1.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium rounded transition-colors"
+                    >
+                      Save to Directory
+                    </button>
+                  </div>
+                </form>
+              )}
 
               {/* Checkbox Roster List */}
               <div className="max-h-64 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100">
-                {filteredStudents.length === 0 ? (
+                {students.length === 0 ? (
+                  <div className="text-center py-6 px-4 bg-white rounded border border-dashed border-stone-200">
+                    <Users className="w-8 h-8 text-stone-300 mx-auto mb-2" />
+                    <div className="text-xs font-semibold text-stone-700">No Students in Directory Yet</div>
+                    <p className="text-[11px] text-stone-500 mt-1 max-w-sm mx-auto">
+                      Click <strong>"Register Student"</strong> above to add students to your permanent roster, or enter email addresses directly below.
+                    </p>
+                  </div>
+                ) : filteredStudents.length === 0 ? (
                   <div className="text-center py-4 text-xs text-stone-400">No students matched search criteria.</div>
                 ) : (
                   filteredStudents.map((s) => {
@@ -424,16 +558,13 @@ export const ScheduleSessionPage: React.FC = () => {
                           <div>
                             <div className="text-xs font-medium text-stone-900">{s.name}</div>
                             <div className="text-[11px] text-stone-500 font-mono">
-                              {s.regNo} · {s.email}
+                              {s.regNo ? `${s.regNo} · ` : ''}{s.email}
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 font-medium">
-                            {s.batch}
-                          </span>
                           <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 font-mono">
-                            {s.capstoneGroup || 'General'}
+                            {s.capstoneGroup || s.batch || 'General'}
                           </span>
                         </div>
                       </label>
@@ -445,13 +576,13 @@ export const ScheduleSessionPage: React.FC = () => {
               {/* Add Custom Recipient Box */}
               <div className="pt-3 border-t border-stone-200">
                 <label className="block text-xs font-medium text-stone-700 mb-1" htmlFor="customEmail">
-                  Add Custom Recipient / Direct Test Address:
+                  Add Recipient / Student Email Address:
                 </label>
                 <div className="flex gap-2">
                   <input
                     id="customEmail"
                     type="email"
-                    placeholder="e.g. your-email@gmail.com or scholar@srmist.edu.in"
+                    placeholder="e.g., student@gmail.com"
                     value={customEmailInput}
                     onChange={(e) => setCustomEmailInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -460,14 +591,14 @@ export const ScheduleSessionPage: React.FC = () => {
                         handleAddCustomEmail();
                       }
                     }}
-                    className="flex-1 h-8 px-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400"
+                    className="flex-1 h-8 px-2.5 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400"
                   />
                   <button
                     type="button"
                     onClick={handleAddCustomEmail}
-                    className="h-8 px-3 bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium rounded transition-colors whitespace-nowrap flex items-center gap-1"
+                    className="px-3 h-8 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded text-xs font-medium transition-colors flex items-center gap-1"
                   >
-                    <UserPlus className="w-3.5 h-3.5" /> Add
+                    <UserPlus className="w-3.5 h-3.5" /> Queue
                   </button>
                 </div>
 
@@ -507,8 +638,12 @@ export const ScheduleSessionPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => {
+                  if (!title.trim()) {
+                    showToast('Title Required', 'Please enter a session title', 'warning');
+                    return;
+                  }
                   if (allRecipients.length === 0) {
-                    showToast('No Recipients', 'Select at least one student recipient', 'warning');
+                    showToast('No Recipients', 'Select or queue at least one recipient email address', 'warning');
                     return;
                   }
                   setModalOpen(true);
@@ -547,7 +682,7 @@ export const ScheduleSessionPage: React.FC = () => {
               {/* Recipient summary */}
               <div className="text-[11px] text-stone-600 bg-white p-2 rounded border border-stone-200 font-mono">
                 To: {allRecipients.length === 0 ? (
-                  <span className="text-stone-400">No recipients selected</span>
+                  <span className="text-stone-400 italic">No recipients selected</span>
                 ) : (
                   <span className="font-semibold text-stone-800">
                     {allRecipients.slice(0, 2).join(', ')}
@@ -557,12 +692,16 @@ export const ScheduleSessionPage: React.FC = () => {
               </div>
 
               <div>
-                <div className="text-sm font-semibold text-stone-900 leading-snug">{title}</div>
-                <div className="text-[11px] text-stone-600 mt-1">{date} · {time}</div>
+                <div className="text-sm font-semibold text-stone-900 leading-snug">
+                  {title || <span className="text-stone-400 italic">Untitled Session</span>}
+                </div>
+                <div className="text-[11px] text-stone-600 mt-1">
+                  {date || time ? `${date || 'Date TBD'} · ${time || 'Time TBD'}` : <span className="text-stone-400 italic">Date & Time pending</span>}
+                </div>
               </div>
 
-              <div className="p-3 bg-white border border-stone-200 rounded text-stone-700 whitespace-pre-wrap leading-relaxed text-[11px]">
-                {notes}
+              <div className="p-3 bg-white border border-stone-200 rounded text-stone-700 whitespace-pre-wrap leading-relaxed text-[11px] min-h-[60px]">
+                {notes || <span className="text-stone-400 italic">No syllabus directives entered yet.</span>}
               </div>
 
               <div className="pt-1">
@@ -579,7 +718,7 @@ export const ScheduleSessionPage: React.FC = () => {
 
             <div className="mt-3 text-[11px] text-stone-500 text-center flex items-center justify-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Sends real emails with calendar (.ics) attached</span>
+              <span>Sends verified email with calendar (.ics) attached</span>
             </div>
           </div>
         </div>
@@ -593,7 +732,7 @@ export const ScheduleSessionPage: React.FC = () => {
             <div>
               <div className="text-xs text-stone-500 mb-1">Pre-Flight Dispatch Review</div>
               <h3 className="text-base font-semibold text-stone-900">Confirm Academic Dispatch</h3>
-              <p className="text-xs text-stone-600 mt-1">{date} · {time}</p>
+              <p className="text-xs text-stone-600 mt-1">{date || 'Scheduled Date'} · {time || 'Scheduled Time'}</p>
             </div>
 
             <div className="p-3.5 bg-stone-50 border border-stone-200 rounded text-xs space-y-2">

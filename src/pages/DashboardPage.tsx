@@ -125,7 +125,7 @@ export const DashboardPage: React.FC = () => {
             <Calendar className="w-3.5 h-3.5 text-stone-400" />
           </div>
           <div className="text-2xl font-medium text-stone-900 tabular-nums">
-            {stats ? stats.totalSessions : 42}
+            {stats?.totalSessions ?? 0}
           </div>
           <div className="text-[11px] text-stone-500 mt-1">Academic Year 2024–25</div>
         </div>
@@ -136,9 +136,11 @@ export const DashboardPage: React.FC = () => {
             <Clock className="w-3.5 h-3.5 text-stone-400" />
           </div>
           <div className="text-2xl font-medium text-stone-900 tabular-nums">
-            {stats ? stats.upcomingScheduled : 4}
+            {stats?.upcomingScheduled ?? 0}
           </div>
-          <div className="text-[11px] text-stone-500 mt-1">Next: Seminar IV today at 15:30</div>
+          <div className="text-[11px] text-stone-500 mt-1 truncate">
+            {sessions.length > 0 ? `Next: ${sessions[0].title}` : 'No sessions queued'}
+          </div>
         </div>
 
         <div className="bg-white border border-[#e6e2da] rounded-lg p-4">
@@ -147,9 +149,9 @@ export const DashboardPage: React.FC = () => {
             <Users className="w-3.5 h-3.5 text-stone-400" />
           </div>
           <div className="text-2xl font-medium text-stone-900 tabular-nums">
-            {stats?.totalStudents || 13} candidates
+            {stats?.totalStudents ?? 0} candidates
           </div>
-          <div className="text-[11px] text-stone-500 mt-1">SRM EEE Capstone Groups</div>
+          <div className="text-[11px] text-stone-500 mt-1">SRM EEE Directory</div>
         </div>
 
         <div className="bg-white border border-[#e6e2da] rounded-lg p-4">
@@ -186,8 +188,25 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             <div className="divide-y divide-stone-100">
-              {sessions.length === 0 ? (
-                <div className="p-8 text-center text-xs text-stone-400">Loading scheduled sessions...</div>
+              {loading ? (
+                <div className="p-8 text-center text-xs text-stone-400">Loading academic records...</div>
+              ) : sessions.length === 0 ? (
+                <div className="p-12 text-center">
+                  <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-3 text-stone-400">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-stone-900">No Academic Sessions Scheduled</h3>
+                  <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
+                    The portal ledger is clean. When Prof. Krishnavel schedules a technical seminar or capstone advisory, it will appear here.
+                  </p>
+                  <Link
+                    to="/schedule-session"
+                    className="inline-flex items-center gap-1.5 mt-4 px-3.5 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-medium transition-colors shadow-sm"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Schedule First Session
+                  </Link>
+                </div>
               ) : (
                 sessions.slice(0, 5).map((session) => (
                   <div key={session.id} className="p-4 hover:bg-stone-50/70 transition-colors">

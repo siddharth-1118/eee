@@ -149,10 +149,28 @@ export const SessionArchivePage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
-              {filteredSessions.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-xs text-stone-400">
+                    Loading session archive records...
+                  </td>
+                </tr>
+              ) : sessions.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-12 text-center">
+                    <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-2 text-stone-400">
+                      <Calendar className="w-5 h-5" />
+                    </div>
+                    <p className="text-sm font-semibold text-stone-800">Session Archive is Clean</p>
+                    <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
+                      No academic convocations or advisory meetings recorded yet. When Prof. Krishnavel schedules a session, it will be catalogued here.
+                    </p>
+                  </td>
+                </tr>
+              ) : filteredSessions.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="p-8 text-center text-stone-400">
-                    No sessions matched the filter criteria.
+                    No sessions matched the search or filter criteria.
                   </td>
                 </tr>
               ) : (
