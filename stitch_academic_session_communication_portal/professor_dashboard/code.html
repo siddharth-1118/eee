@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Dashboard · Academic Session Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/shared-portal.css"/>
+</head>
+<body class="bg-[#faf9f6] text-[#1c1917] font-['Inter',sans-serif] antialiased">
+
+  <!-- Main Institutional Header -->
+  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-white border-b border-[#e6e2da]">
+    <div class="h-16 max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="/dashboard" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+          <img alt="Prof. Krishnavel" class="w-8 h-8 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+          <div class="flex flex-col">
+            <span class="text-sm font-medium text-[#1c1917] leading-tight">Prof. Krishnavel · Academic Portal</span>
+            <span class="text-[11px] text-[#78716c]">Department of Engineering</span>
+          </div>
+        </a>
+        <nav class="hidden xl:flex items-center gap-1 ml-4">
+          <a class="px-3 py-1.5 rounded text-sm font-medium bg-stone-100 text-stone-900 border border-stone-200 transition-colors" data-path="dashboard-overview" href="/dashboard" aria-current="page">Dashboard</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="schedule-session" href="/schedule-session">Schedule Session</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="session-archive-history" href="/session-archive-history">Session Archive</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="email-dispatches-templates" href="/student-faculty-email-template">Email Templates</a>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <button aria-label="Notifications" class="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded transition-colors flex items-center justify-center relative" type="button">
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+            <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-stone-900"></span>
+          </button>
+        </div>
+        <div class="h-5 w-[1px] bg-stone-200"></div>
+        <div class="flex items-center gap-3">
+          <div class="flex flex-col text-right hidden sm:flex">
+            <span class="text-xs font-medium text-stone-900 leading-tight">Prof. Krishnavel</span>
+            <span class="text-[11px] text-stone-500">Senior Faculty Advisor</span>
+          </div>
+          <img alt="Profile" class="w-8 h-8 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+          <a class="p-1.5 text-stone-500 hover:text-stone-900 rounded transition-colors" data-path="login" href="/login" title="Sign Out">
+            <span class="material-symbols-outlined text-[18px]">logout</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Body -->
+  <main class="w-full pt-20">
+    <div class="max-w-7xl mx-auto px-6 py-6">
+      
+      <!-- Context & Primary Header Banner -->
+      <div class="bg-white border border-[#e6e2da] rounded-lg p-6 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div class="flex items-center gap-4">
+            <img src="/professor_krishnavel.jpg" alt="Prof. Krishnavel" class="w-16 h-16 rounded-full object-cover border-2 border-stone-200 shadow-sm flex-shrink-0"/>
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs text-stone-500 font-medium">SRMIST · Department of Electrical & Electronics Engineering</span>
+                <span class="text-stone-300">·</span>
+                <span class="text-[11px] font-mono bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-200">SMTP Relay Active</span>
+              </div>
+              <h1 class="font-['Newsreader',serif] text-2xl font-normal text-stone-900">Prof. Krishnavel · Academic Advisory Portal</h1>
+              <p class="text-xs text-stone-600 mt-1 max-w-xl">
+                Schedule technical seminars, select enrolled student cohorts, and dispatch calendar-verified notices via Google SMTP (<code class="text-stone-700">srmeeelibraray@gmail.com</code>).
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded text-xs font-medium transition-colors" onclick="window.location.href='/session-archive-history'">
+              Session Archive
+            </button>
+            <button class="px-3.5 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-medium transition-colors flex items-center gap-1.5" onclick="window.location.href='/schedule-session'">
+              <span class="material-symbols-outlined text-[16px]">add</span>
+              Schedule Session
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Metrics Row: 4 Clean Stat Blocks -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white border border-[#e6e2da] rounded-lg p-4">
+          <div class="text-xs text-stone-500 mb-1">Total Sessions Conducted</div>
+          <div class="text-2xl font-medium text-stone-900 tabular-nums">42</div>
+          <div class="text-[11px] text-stone-500 mt-1">Semester II register</div>
+        </div>
+        <div class="bg-white border border-[#e6e2da] rounded-lg p-4">
+          <div class="text-xs text-stone-500 mb-1">Upcoming Scheduled</div>
+          <div class="text-2xl font-medium text-stone-900 tabular-nums">4</div>
+          <div class="text-[11px] text-stone-500 mt-1">Next: Capstone VII today at 11:30</div>
+        </div>
+        <div class="bg-white border border-[#e6e2da] rounded-lg p-4">
+          <div class="text-xs text-stone-500 mb-1">Cohort Email Reach</div>
+          <div class="text-2xl font-medium text-stone-900 tabular-nums">1,240</div>
+          <div class="text-[11px] text-stone-500 mt-1">Verified student & faculty list</div>
+        </div>
+        <div class="bg-white border border-[#e6e2da] rounded-lg p-4">
+          <div class="text-xs text-stone-500 mb-1">Dispatch Delivery Rate</div>
+          <div class="text-2xl font-medium text-stone-900 tabular-nums">99.4%</div>
+          <div class="text-[11px] text-[#15803d] font-medium mt-1">Zero bounce errors recorded</div>
+        </div>
+      </div>
+
+      <!-- Main Asymmetric Grid: 8 Cols vs 4 Cols -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left: Active Sessions & Next Broadcast (8 cols) -->
+        <div class="lg:col-span-8 space-y-6">
+          <div class="bg-white border border-[#e6e2da] rounded-lg overflow-hidden">
+            <div class="p-4 border-b border-[#e6e2da] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-sm font-semibold text-stone-900">Active & Imminent Sessions</h2>
+                <div class="text-xs text-stone-500">4 active records in current timetable</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="relative">
+                  <input class="h-8 pl-8 pr-3 bg-stone-50 border border-stone-200 rounded text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:border-stone-400 w-48 sm:w-56" placeholder="Search sessions..." type="text"/>
+                  <span class="material-symbols-outlined text-stone-400 text-[16px] absolute left-2.5 top-2 pointer-events-none">search</span>
+                </div>
+                <button class="h-8 px-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded text-xs transition-colors" title="Filter list">
+                  <span class="material-symbols-outlined text-[16px]">tune</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="bg-stone-50 text-stone-600 border-b border-stone-200">
+                    <th class="py-2.5 px-4 font-medium">Session & Cohort</th>
+                    <th class="py-2.5 px-4 font-medium">Schedule</th>
+                    <th class="py-2.5 px-4 font-medium">Channel</th>
+                    <th class="py-2.5 px-4 font-medium">Status</th>
+                    <th class="py-2.5 px-4 font-medium text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-stone-100 text-stone-800">
+                  
+                  <!-- Session 1 -->
+                  <tr class="hover:bg-stone-50/60 transition-colors">
+                    <td class="py-3 px-4">
+                      <div class="font-medium text-stone-900">Senior Capstone Defense Prep · Grp VII</div>
+                      <div class="text-[11px] text-stone-500">ECE Dept · 14 Candidates · Room 304B</div>
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap tabular-nums">
+                      <div>Today, 11:30 AM</div>
+                      <div class="text-[11px] text-stone-500">45 min</div>
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap text-stone-600">MS Teams / Hybrid</td>
+                    <td class="py-3 px-4 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Upcoming</span>
+                    </td>
+                    <td class="py-3 px-4 text-right whitespace-nowrap">
+                      <div class="flex items-center justify-end gap-1">
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.copyMeetingLink('https://meet.institution.edu/engr-krishnavel-capstone7')" title="Copy Meeting Link">
+                          <span class="material-symbols-outlined text-[16px]">content_copy</span>
+                        </button>
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/student-faculty-email-template'" title="Preview Email Dispatch">
+                          <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        </button>
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/schedule-session'" title="Edit Session">
+                          <span class="material-symbols-outlined text-[16px]">edit</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Session 2 -->
+                  <tr class="hover:bg-stone-50/60 transition-colors">
+                    <td class="py-3 px-4">
+                      <div class="font-medium text-stone-900">PhD Colloquium: Autonomous Microgrid Control</div>
+                      <div class="text-[11px] text-stone-500">Research Scholars · 28 Faculty & Invitee Fellows</div>
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap tabular-nums">
+                      <div>Tomorrow, 02:00 PM</div>
+                      <div class="text-[11px] text-stone-500">90 min</div>
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap text-stone-600">Auditorium Hall B</td>
+                    <td class="py-3 px-4 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">Dispatched</span>
+                    </td>
+                    <td class="py-3 px-4 text-right whitespace-nowrap">
+                      <div class="flex items-center justify-end gap-1">
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.copyMeetingLink('https://academic.portal/event/microgrid-colloquium')" title="Copy Link">
+                          <span class="material-symbols-outlined text-[16px]">content_copy</span>
+                        </button>
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/student-faculty-email-template'" title="Preview Dispatch">
+                          <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        </button>
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/schedule-session'" title="Edit">
+                          <span class="material-symbols-outlined text-[16px]">edit</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Session 3 -->
+                  <tr class="hover:bg-stone-50/60 transition-colors">
+                    <td class="py-3 px-4">
+                      <div class="font-medium text-stone-900">Special Topics in Embedded Firmware Systems</div>
+                      <div class="text-[11px] text-stone-500">Open Elective · 85 Registrants</div>
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap tabular-nums">
+                      <div>Thu, 10:00 AM</div>
+                      <div class="text-[11px] text-stone-500">60 min</div>
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap text-stone-600">Zoom Webinar</td>
+                    <td class="py-3 px-4 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-stone-100 text-stone-700 border border-stone-200">Draft</span>
+                    </td>
+                    <td class="py-3 px-4 text-right whitespace-nowrap">
+                      <div class="flex items-center justify-end gap-1">
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/student-faculty-email-template'" title="Preview">
+                          <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        </button>
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/schedule-session'" title="Complete Setup">
+                          <span class="material-symbols-outlined text-[16px]">edit</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Session 4 -->
+                  <tr class="hover:bg-stone-50/60 transition-colors">
+                    <td class="py-3 px-4">
+                      <div class="font-medium text-stone-900">Faculty Curriculum Review: AI & Robotics Track</div>
+                      <div class="text-[11px] text-stone-500">Departmental Senate · Dean & Senior Chairs</div>
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap tabular-nums">
+                      <div>Fri, 04:00 PM</div>
+                      <div class="text-[11px] text-stone-500">120 min</div>
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap text-stone-600">Conference Room 1</td>
+                    <td class="py-3 px-4 whitespace-nowrap">
+                      <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Upcoming</span>
+                    </td>
+                    <td class="py-3 px-4 text-right whitespace-nowrap">
+                      <div class="flex items-center justify-end gap-1">
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.copyMeetingLink('https://meet.institution.edu/senate-curriculum')" title="Copy Link">
+                          <span class="material-symbols-outlined text-[16px]">content_copy</span>
+                        </button>
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/student-faculty-email-template'" title="Preview">
+                          <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        </button>
+                        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/schedule-session'" title="Edit">
+                          <span class="material-symbols-outlined text-[16px]">edit</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+
+            <div class="p-3 border-t border-stone-200 flex items-center justify-between text-xs text-stone-500">
+              <span>Showing 4 active upcoming sessions</span>
+              <a class="text-stone-700 hover:text-stone-900 font-medium" href="/session-archive-history">View all 45 recorded sessions →</a>
+            </div>
+          </div>
+
+          <!-- Quiet Session Callout -->
+          <div class="bg-white border border-[#e6e2da] rounded-lg p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <div class="text-xs text-stone-500 mb-0.5">Next Impending Review</div>
+              <div class="text-sm font-medium text-stone-900">Senior Capstone Group VII Defense Call</div>
+              <div class="text-xs text-stone-600 mt-0.5">Room link active. Auto-reminders dispatch 15 minutes prior to launch.</div>
+            </div>
+            <button class="px-3.5 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-medium transition-colors whitespace-nowrap" onclick="window.open('https://meet.google.com/eng-krish-pract', '_blank');">
+              Launch Virtual Suite
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Quick Actions, Recent Dispatches & Milestones (4 cols) -->
+        <div class="lg:col-span-4 space-y-6">
+          
+          <!-- Quick Broadcast Notice Card -->
+          <div class="bg-white border border-[#e6e2da] rounded-lg p-5">
+            <h3 class="text-sm font-semibold text-stone-900 mb-1">Issue Cohort Notice</h3>
+            <p class="text-xs text-stone-600 mb-4">
+              Send advisory notifications or schedule updates directly to registered distribution lists.
+            </p>
+            <form class="space-y-3" onsubmit="event.preventDefault(); handleDashboardBroadcast();">
+              <div>
+                <label class="block text-xs font-medium text-stone-600 mb-1">Distribution Group</label>
+                <select id="broadcastRoster" class="w-full h-8 px-2.5 bg-stone-50 border border-stone-200 rounded text-xs text-stone-800 focus:outline-none focus:border-stone-400">
+                  <option>Final Year Capstone Cohort (320 Students)</option>
+                  <option>Departmental Faculty & Fellows (48 Faculty)</option>
+                  <option>Combined Engineering Assembly (368 Total)</option>
+                  <option>Research M.Tech Lab Scholars (18 Students)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-stone-600 mb-1">Subject</label>
+                <input id="broadcastSubject" class="w-full h-8 px-2.5 bg-stone-50 border border-stone-200 rounded text-xs text-stone-800 focus:outline-none focus:border-stone-400" type="text" value="[Advisory Update] Office Hours Rescheduled to 11:30"/>
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button type="submit" class="flex-1 h-8 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-1.5">
+                  <span class="material-symbols-outlined text-[15px]">send</span>
+                  Dispatch Email
+                </button>
+                <button type="button" class="h-8 px-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded text-xs font-medium transition-colors" onclick="window.location.href='/student-faculty-email-template'" title="Configure Template">
+                  <span class="material-symbols-outlined text-[16px]">tune</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Recent Dispatches -->
+          <div class="bg-white border border-[#e6e2da] rounded-lg p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-semibold text-stone-900">Recent Dispatches</h3>
+              <a class="text-xs text-stone-600 hover:text-stone-900 font-medium" href="/session-archive-history">View all</a>
+            </div>
+            <div class="divide-y divide-stone-100">
+              <div class="py-2.5">
+                <div class="flex items-center justify-between text-[11px] text-stone-500 mb-1">
+                  <span class="font-medium text-stone-800">Faculty · 48</span>
+                  <span class="tabular-nums">Yesterday, 18:20</span>
+                </div>
+                <div class="text-xs font-medium text-stone-900 leading-snug">Annual ABET Accreditation Review Agenda</div>
+                <div class="text-[11px] text-[#15803d] mt-1">100% delivered · 46 opened</div>
+              </div>
+              <div class="py-2.5">
+                <div class="flex items-center justify-between text-[11px] text-stone-500 mb-1">
+                  <span class="font-medium text-stone-800">Students · 320</span>
+                  <span class="tabular-nums">Oct 14, 09:15</span>
+                </div>
+                <div class="text-xs font-medium text-stone-900 leading-snug">Mid-Semester Submission Window Extension Notice</div>
+                <div class="text-[11px] text-[#15803d] mt-1">98.4% delivered · 298 opened</div>
+              </div>
+              <div class="py-2.5">
+                <div class="flex items-center justify-between text-[11px] text-stone-500 mb-1">
+                  <span class="font-medium text-stone-800">Combined · 368</span>
+                  <span class="tabular-nums">Oct 11, 14:00</span>
+                </div>
+                <div class="text-xs font-medium text-stone-900 leading-snug">Keynote Lecture: Silicon Photonics Architecture</div>
+                <div class="text-[11px] text-[#15803d] mt-1">99.1% delivered · 344 opened</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Calendar Dates -->
+          <div class="bg-white border border-[#e6e2da] rounded-lg p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-semibold text-stone-900">Academic Milestones</h3>
+              <span class="text-xs text-stone-500">October 2024</span>
+            </div>
+            <div class="space-y-2">
+              <div class="p-2.5 rounded border border-stone-100 bg-stone-50 flex items-start gap-3">
+                <div class="w-9 h-9 rounded bg-white border border-stone-200 flex flex-col items-center justify-center flex-shrink-0 text-stone-900">
+                  <span class="text-[9px] uppercase font-bold text-stone-500">Wed</span>
+                  <span class="text-xs font-bold leading-none tabular-nums">16</span>
+                </div>
+                <div>
+                  <div class="text-xs font-medium text-stone-900">Capstone Group VII Review</div>
+                  <div class="text-[11px] text-stone-500">11:30 AM · 14 Candidates</div>
+                </div>
+              </div>
+              <div class="p-2.5 rounded border border-stone-100 bg-stone-50 flex items-start gap-3">
+                <div class="w-9 h-9 rounded bg-white border border-stone-200 flex flex-col items-center justify-center flex-shrink-0 text-stone-900">
+                  <span class="text-[9px] uppercase font-bold text-stone-500">Thu</span>
+                  <span class="text-xs font-bold leading-none tabular-nums">17</span>
+                </div>
+                <div>
+                  <div class="text-xs font-medium text-stone-900">Colloquium: Microgrid Control</div>
+                  <div class="text-[11px] text-stone-500">02:00 PM · Research Hall B</div>
+                </div>
+              </div>
+              <div class="p-2.5 rounded border border-stone-100 bg-stone-50 flex items-start gap-3">
+                <div class="w-9 h-9 rounded bg-white border border-stone-200 flex flex-col items-center justify-center flex-shrink-0 text-stone-900">
+                  <span class="text-[9px] uppercase font-bold text-stone-500">Fri</span>
+                  <span class="text-xs font-bold leading-none tabular-nums">18</span>
+                </div>
+                <div>
+                  <div class="text-xs font-medium text-stone-900">Curriculum Senate Session</div>
+                  <div class="text-[11px] text-stone-500">04:00 PM · Conference Room 1</div>
+                </div>
+              </div>
+            </div>
+            <button class="w-full mt-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded text-xs font-medium transition-colors text-center" onclick="downloadIcsCalendar('Master Academic Calendar AY 2024-25', '2024-10-16', '11:30 AM', 'https://meet.institution.edu/academic-suite')">
+              Download Department Calendar (.ics)
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="w-full bg-white border-t border-[#e6e2da] py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+      <div>Prof. Krishnavel · Department of Engineering & Technology</div>
+      <div>Academic Year 2024–2025 · Faculty Management System</div>
+    </div>
+  </footer>
+
+  <script>
+    function handleDashboardBroadcast() {
+      const subject = document.getElementById('broadcastSubject')?.value || '[Advisory Notice]';
+      const roster = document.getElementById('broadcastRoster')?.value || 'Cohort';
+      showPortalToast('Dispatch Queued', `Sending notice to ${roster}`, 'info');
+      setTimeout(() => {
+        showPortalToast('Dispatch Complete', `Notice "${subject}" sent.`, 'success');
+      }, 700);
+    }
+  </script>
+  <script src="/shared-portal.js"></script>
+</body>
+</html>

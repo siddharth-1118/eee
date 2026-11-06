@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Email Dispatch Template · Academic Session Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/shared-portal.css"/>
+</head>
+<body class="bg-[#faf9f6] text-[#1c1917] font-['Inter',sans-serif] antialiased">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-white border-b border-[#e6e2da]">
+    <div class="h-16 max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="/dashboard" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+          <img alt="Prof. Krishnavel" class="w-8 h-8 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+          <div class="flex flex-col">
+            <span class="text-sm font-medium text-[#1c1917] leading-tight">Prof. Krishnavel · Academic Portal</span>
+            <span class="text-[11px] text-[#78716c]">Department of Engineering</span>
+          </div>
+        </a>
+        <nav class="hidden xl:flex items-center gap-1 ml-4">
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="dashboard-overview" href="/dashboard">Dashboard</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="schedule-session" href="/schedule-session">Schedule Session</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="session-archive-history" href="/session-archive-history">Session Archive</a>
+          <a class="px-3 py-1.5 rounded text-sm font-medium bg-stone-100 text-stone-900 border border-stone-200 transition-colors" data-path="email-dispatches-templates" href="/student-faculty-email-template" aria-current="page">Email Templates</a>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <button aria-label="Notifications" class="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded transition-colors flex items-center justify-center relative" type="button">
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+            <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-stone-900"></span>
+          </button>
+        </div>
+        <div class="h-5 w-[1px] bg-stone-200"></div>
+        <div class="flex items-center gap-3">
+          <div class="flex flex-col text-right hidden sm:flex">
+            <span class="text-xs font-medium text-stone-900 leading-tight">Prof. Krishnavel</span>
+            <span class="text-[11px] text-stone-500">Senior Faculty Advisor</span>
+          </div>
+          <img alt="Profile" class="w-8 h-8 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+          <a class="p-1.5 text-stone-500 hover:text-stone-900 rounded transition-colors" data-path="login" href="/login" title="Sign Out">
+            <span class="material-symbols-outlined text-[18px]">logout</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full pt-20">
+    <div class="max-w-7xl mx-auto px-6 py-6 pb-16">
+      
+      <!-- Utility Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div>
+          <h1 class="text-lg font-semibold text-stone-900">Email Dispatch Template Inspection</h1>
+          <p class="text-xs text-stone-500">Preview formatted student and faculty notices rendered across institutional mail clients</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="px-3 py-1.5 rounded text-xs font-medium bg-stone-900 text-white" id="btn-desktop" onclick="toggleDeviceView('desktop')">
+            Desktop View
+          </button>
+          <button class="px-3 py-1.5 rounded text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-800" id="btn-split" onclick="toggleDeviceView('split')">
+            Side Inspector
+          </button>
+          <button class="px-3 py-1.5 rounded text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-800 flex items-center gap-1.5" onclick="copyRawHtml()">
+            <span class="material-symbols-outlined text-[15px]">code</span>
+            <span id="copy-btn-text">Copy HTML</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Inspection Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start" id="email-preview-container">
+        
+        <!-- Mail Client Window (8 or 12 cols) -->
+        <div class="lg:col-span-8 bg-white border border-[#e6e2da] rounded-lg overflow-hidden" id="main-client-window">
+          
+          <!-- Client Header Chrome -->
+          <div class="bg-stone-50 border-b border-stone-200 px-4 py-2.5 flex items-center justify-between text-xs text-stone-600">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-stone-300"></span>
+              <span class="font-medium text-stone-800">Faculty Advisory Bulletin</span>
+            </div>
+            <div class="text-[11px] text-stone-500 font-mono">640px Responsive Canvas</div>
+          </div>
+
+          <!-- Envelope Header -->
+          <div class="p-5 border-b border-stone-100 bg-[#fdfbf7] space-y-2 text-xs">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <h2 class="text-sm font-semibold text-stone-900 leading-snug">
+                [Academic Session] Advanced Industrial Robotics & Digital Twin Architecture · Seminar IV
+              </h2>
+              <span class="text-[11px] text-stone-500 tabular-nums whitespace-nowrap">Thu, Oct 24, 2024 · 08:15 AM</span>
+            </div>
+            <div class="text-stone-600 space-y-0.5 text-[11px]">
+              <div><span class="text-stone-400">From:</span> Prof. Krishnavel &lt;krishnavel.practice@engineering.edu.in&gt;</div>
+              <div><span class="text-stone-400">To:</span> Engineering Faculty & Student Cohort &lt;cohort-academic-dist@engineering.edu.in&gt;</div>
+            </div>
+          </div>
+
+          <!-- Rendered 640px Email Payload (The Craft Moment) -->
+          <div class="p-6 sm:p-10 bg-[#faf9f6] flex justify-center">
+            <div class="w-full max-w-[600px] bg-white border border-[#e6e2da] rounded-lg p-8 space-y-6 shadow-sm">
+              
+              <!-- Letterhead -->
+              <div class="border-b border-stone-200 pb-4 flex items-start justify-between">
+                <div>
+                  <div class="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">Department of Engineering</div>
+                  <div class="font-['Newsreader',serif] text-lg font-normal text-stone-900">Office of Practice & Advisory</div>
+                </div>
+                <div class="text-right text-[11px] text-stone-500 font-mono">§ 2024-SEM-04</div>
+              </div>
+
+              <!-- Content Body -->
+              <div class="space-y-4 text-xs text-stone-800 leading-relaxed">
+                <p class="font-medium text-stone-900 text-sm">Dear Students and Department Colleagues,</p>
+                <p>
+                  You are scheduled to attend Seminar IV under the Advanced Engineering Practice curriculum. Please review the syllabus outline and mark the confirmed timetable in your calendar.
+                </p>
+
+                <!-- Session Callout -->
+                <div class="p-4 bg-stone-50 border border-stone-200 rounded space-y-2">
+                  <div class="text-[11px] text-stone-500 font-medium uppercase">Session Agenda</div>
+                  <div class="font-medium text-stone-900 text-sm">Advanced Industrial Robotics & Digital Twin Architecture</div>
+                  <div class="text-xs text-stone-600">
+                    <div>Date: <strong>Thursday, October 24, 2024</strong></div>
+                    <div>Time: <strong>03:30 PM – 05:00 PM IST</strong></div>
+                    <div>Location: <strong>Google Meet / Autonomous Systems Lab B-14</strong></div>
+                  </div>
+                  <div class="pt-2">
+                    <a class="inline-block px-4 py-2 bg-stone-900 text-white rounded text-xs font-medium hover:bg-stone-800" href="https://meet.google.com/eng-krish-pract" target="_blank">
+                      Join Teleconference
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Preparation Notes -->
+                <div class="space-y-1 pt-1">
+                  <div class="font-medium text-stone-900">Preparatory Reading & Prerequisites:</div>
+                  <ul class="list-disc list-inside space-y-1 text-stone-600 pl-1">
+                    <li>Kinematic Inverse Solvers technical brief (accessible on department portal).</li>
+                    <li>ROS2 testbed environment access verification.</li>
+                    <li>Mandatory project milestone check for Capstone Groups 04, 09, and 12.</li>
+                  </ul>
+                </div>
+
+                <!-- RSVP Interactive Block -->
+                <div class="p-3 bg-stone-50 border border-stone-200 rounded text-center space-y-2">
+                  <div class="text-[11px] text-stone-600 font-medium">Please confirm your attendance status for the session register:</div>
+                  <div class="flex items-center justify-center gap-2">
+                    <button class="px-3 py-1 bg-white hover:bg-stone-100 text-stone-900 border border-stone-200 rounded text-xs font-medium" onclick="showPortalToast('RSVP Confirmed', 'Recorded as Attending.', 'success')" type="button">
+                      Attending
+                    </button>
+                    <button class="px-3 py-1 bg-white hover:bg-stone-100 text-stone-900 border border-stone-200 rounded text-xs" onclick="showPortalToast('RSVP Logged', 'Marked as Tentative.', 'info')" type="button">
+                      Tentative
+                    </button>
+                    <button class="px-3 py-1 bg-white hover:bg-stone-100 text-stone-600 border border-stone-200 rounded text-xs" onclick="showPortalToast('RSVP Logged', 'Marked as Unable to Attend.', 'warning')" type="button">
+                      Unable to Attend
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Faculty Signature -->
+                <div class="pt-4 border-t border-stone-200 flex items-center gap-3">
+                  <img src="/professor_krishnavel.jpg" alt="Prof. Krishnavel" class="w-12 h-12 rounded-full object-cover border border-stone-300 flex-shrink-0"/>
+                  <div class="text-[11px] text-stone-600 space-y-0.5">
+                    <div class="font-medium text-stone-900 text-xs">Prof. of Practice Engr. Krishnavel</div>
+                    <div>Senior Faculty Advisor · Automation & Robotics</div>
+                    <div>Department of Electrical & Electronics Engineering · SRMIST</div>
+                    <div class="text-[10px] text-stone-500 font-mono">Relay: srmeeelibraray@gmail.com</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Side Inspector Panel -->
+        <div class="lg:col-span-4 space-y-4" id="inspector-column">
+          
+          <div class="bg-white border border-[#e6e2da] rounded-lg p-5 space-y-4">
+            <h3 class="text-sm font-semibold text-stone-900">Dispatch Controls</h3>
+            
+            <div class="space-y-2 text-xs">
+              <button class="w-full py-2 bg-stone-900 hover:bg-stone-800 text-white rounded font-medium flex items-center justify-center gap-1.5" onclick="downloadIcs()" type="button">
+                <span class="material-symbols-outlined text-[16px]">calendar_add_on</span>
+                Download .ics Calendar
+              </button>
+              <button class="w-full py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded font-medium flex items-center justify-center gap-1.5" onclick="sendLiveTestEmail()" type="button" id="btn-send-test">
+                <span class="material-symbols-outlined text-[16px]">forward_to_inbox</span>
+                <span id="btn-send-test-text">Send Live Test Email</span>
+              </button>
+              <button class="w-full py-2 border border-stone-200 hover:bg-stone-50 text-stone-700 rounded font-medium flex items-center justify-center gap-1.5" onclick="window.location.href='/schedule-session'" type="button">
+                <span class="material-symbols-outlined text-[16px]">edit</span>
+                Edit Session Parameters
+              </button>
+            </div>
+
+            <div class="pt-3 border-t border-stone-100 text-xs space-y-2 text-stone-600">
+              <div class="font-medium text-stone-900">Dispatch Parameters:</div>
+              <div class="flex justify-between">
+                <span>Relay Protocol:</span>
+                <span class="font-mono text-stone-800">SMTP Relay</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Recipients:</span>
+                <span class="font-mono text-stone-800">368 addresses</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Calendar Attachment:</span>
+                <span class="font-mono text-stone-800">Standard RFC-5545</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    function toggleDeviceView(mode) {
+      const mainCol = document.getElementById('main-client-window');
+      const inspector = document.getElementById('inspector-column');
+      const btnDesktop = document.getElementById('btn-desktop');
+      const btnSplit = document.getElementById('btn-split');
+
+      if (mode === 'desktop') {
+        mainCol.className = 'lg:col-span-12 bg-white border border-[#e6e2da] rounded-lg overflow-hidden';
+        inspector.classList.add('hidden');
+        btnDesktop.className = 'px-3 py-1.5 rounded text-xs font-medium bg-stone-900 text-white';
+        btnSplit.className = 'px-3 py-1.5 rounded text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-800';
+      } else {
+        mainCol.className = 'lg:col-span-8 bg-white border border-[#e6e2da] rounded-lg overflow-hidden';
+        inspector.classList.remove('hidden');
+        btnDesktop.className = 'px-3 py-1.5 rounded text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-800';
+        btnSplit.className = 'px-3 py-1.5 rounded text-xs font-medium bg-stone-900 text-white';
+      }
+    }
+
+    function downloadIcs() {
+      window.downloadIcsCalendar('Seminar IV: Advanced Industrial Robotics', '2024-10-24', '03:30 PM', 'https://meet.google.com/eng-krish-pract');
+    }
+
+    function copyRawHtml() {
+      const raw = `<!-- Department of Engineering Bulletin -->
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#faf9f6;font-family:Inter,sans-serif;">
+  <tr><td align="center" style="padding:24px;">
+    <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e6e2da;border-radius:6px;padding:24px;">
+      <tr><td>
+        <h2 style="font-size:16px;color:#1c1917;margin:0 0 8px 0;">Advanced Industrial Robotics - Seminar IV</h2>
+        <p style="font-size:13px;color:#57534e;line-height:1.5;">Date: Thursday, Oct 24, 2024 · 03:30 PM IST</p>
+        <p style="font-size:13px;color:#57534e;"><a href="https://meet.google.com/eng-krish-pract" style="color:#1e3a8a;font-weight:600;">Join Teleconference Gateway</a></p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>`;
+      navigator.clipboard.writeText(raw).then(() => {
+        const btn = document.getElementById('copy-btn-text');
+        btn.innerText = 'Copied!';
+        setTimeout(() => { btn.innerText = 'Copy HTML'; }, 2000);
+      });
+    }
+
+    async function sendLiveTestEmail() {
+      const email = prompt('Enter recipient email address for test dispatch:', 'srmeeelibraray@gmail.com');
+      if (!email) return;
+
+      const btn = document.getElementById('btn-send-test');
+      const text = document.getElementById('btn-send-test-text');
+      btn.disabled = true;
+      text.textContent = 'Sending via SMTP...';
+
+      try {
+        const res = await fetch('/api/smtp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            recipients: [email],
+            session: {
+              title: 'Advanced Industrial Robotics & Digital Twin Architecture · Seminar IV',
+              date: 'Thursday, Oct 24, 2024',
+              time: '03:30 PM - 05:00 PM IST',
+              link: 'https://meet.google.com/eng-krish-pract',
+              notes: 'Real-time multi-robot coordination algorithms and digital twin testbed demonstration. Mandatory for Capstone Groups 04, 09, and 12.'
+            }
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showPortalToast('Email Dispatched', `Test email sent to ${email} via srmeeelibraray@gmail.com!`, 'success', 5000);
+        } else {
+          showPortalToast('Dispatch Failed', data.error || 'SMTP delivery failed', 'error');
+        }
+      } catch (e) {
+        showPortalToast('Error', e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        text.textContent = 'Send Live Test Email';
+      }
+    }
+  </script>
+  <script src="/shared-portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Schedule Session · Academic Session Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/shared-portal.css"/>
+</head>
+<body class="bg-[#faf9f6] text-[#1c1917] font-['Inter',sans-serif] antialiased">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-white border-b border-[#e6e2da]">
+    <div class="h-16 max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="/dashboard" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+          <img alt="Prof. Krishnavel" class="w-9 h-9 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+          <div class="flex flex-col">
+            <span class="text-sm font-medium text-[#1c1917] leading-tight">Prof. Krishnavel · Academic Portal</span>
+            <span class="text-[11px] text-[#78716c]">Department of Electrical & Electronics Engineering</span>
+          </div>
+        </a>
+        <nav class="hidden xl:flex items-center gap-1 ml-4">
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="dashboard-overview" href="/dashboard">Dashboard</a>
+          <a class="px-3 py-1.5 rounded text-sm font-medium bg-stone-100 text-stone-900 border border-stone-200 transition-colors" data-path="schedule-session" href="/schedule-session" aria-current="page">Schedule Session</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="session-archive-history" href="/session-archive-history">Session Archive</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="email-dispatches-templates" href="/student-faculty-email-template">Email Templates</a>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <button aria-label="Notifications" class="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded transition-colors flex items-center justify-center relative" type="button">
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+            <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-stone-900"></span>
+          </button>
+        </div>
+        <div class="h-5 w-[1px] bg-stone-200"></div>
+        <div class="flex items-center gap-3">
+          <div class="flex flex-col text-right hidden sm:flex">
+            <span class="text-xs font-medium text-stone-900 leading-tight">Prof. Krishnavel</span>
+            <span class="text-[11px] text-stone-500">Senior Faculty Advisor</span>
+          </div>
+          <img alt="Profile" class="w-8 h-8 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+          <a class="p-1.5 text-stone-500 hover:text-stone-900 rounded transition-colors" data-path="login" href="/login" title="Sign Out">
+            <span class="material-symbols-outlined text-[18px]">logout</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full pt-20">
+    <div class="max-w-7xl mx-auto px-6 py-6 pb-16">
+      
+      <!-- Context & Banner -->
+      <div class="bg-white border border-[#e6e2da] rounded-lg p-6 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="text-xs text-stone-500 font-medium mb-1">Session Configuration & Roster Dispatch</div>
+          <h1 class="font-['Newsreader',serif] text-2xl font-normal text-stone-900">Schedule Academic Session</h1>
+          <p class="text-xs text-stone-600 mt-1 max-w-2xl">
+            Configure timetable parameters, specify teleconference coordinates, select target students, and send verified email notices via SMTP.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 text-xs text-stone-600 bg-stone-50 border border-stone-200 px-3 py-1.5 rounded">
+            <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+            <span>SMTP: <strong>srmeeelibraray@gmail.com</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Layout: Form (8 cols) vs Preview (4 cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Form Column -->
+        <div class="lg:col-span-8 space-y-6">
+          
+          <!-- Section 1: Timetable & Coordinates -->
+          <section class="bg-white border border-[#e6e2da] rounded-lg p-6">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-stone-100">
+              <h2 class="text-sm font-semibold text-stone-900">1. Timetable & Teleconference Coordinates</h2>
+              <span class="text-xs text-stone-400">Step 1 of 3</span>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-medium text-stone-700 mb-1" for="sessionTitle">Session Title & Agenda</label>
+                <input class="w-full h-9 px-3 bg-white text-stone-900 border border-stone-200 rounded text-sm focus:outline-none focus:border-stone-400" id="sessionTitle" type="text" value="Advanced Industrial Robotics & Digital Twin Architecture - Seminar IV"/>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-stone-700 mb-1" for="sessionDate">Date</label>
+                  <div class="relative">
+                    <input class="w-full h-9 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400" id="sessionDate" type="text" value="Thursday, Oct 24, 2024"/>
+                    <span class="material-symbols-outlined absolute left-2.5 top-2 text-stone-400 text-[16px] pointer-events-none">calendar_month</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-stone-700 mb-1" for="sessionTime">Time Interval (IST)</label>
+                  <div class="relative">
+                    <input class="w-full h-9 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400" id="sessionTime" type="text" value="03:30 PM - 05:00 PM IST"/>
+                    <span class="material-symbols-outlined absolute left-2.5 top-2 text-stone-400 text-[16px] pointer-events-none">schedule</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-xs font-medium text-stone-700" for="meetingLink">Teleconference URL or Hall Gateway</label>
+                  <span class="text-[11px] text-stone-500" id="detectedPlatformBadge">Google Meet</span>
+                </div>
+                <div class="flex gap-2">
+                  <input class="flex-1 h-9 px-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400" id="meetingLink" type="url" value="https://meet.google.com/eng-krish-pract"/>
+                  <button class="h-9 px-3 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-medium rounded transition-colors whitespace-nowrap" id="testLinkBtn" type="button">
+                    Test Link
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-stone-700 mb-1.5">Platform Preset</label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="platformSelector">
+                  <button class="platform-chip py-1.5 px-3 rounded text-xs font-medium bg-stone-900 text-white transition-colors" data-platform="meet" type="button">Google Meet</button>
+                  <button class="platform-chip py-1.5 px-3 rounded text-xs font-medium bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors" data-platform="teams" type="button">MS Teams</button>
+                  <button class="platform-chip py-1.5 px-3 rounded text-xs font-medium bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors" data-platform="zoom" type="button">Zoom Room</button>
+                  <button class="platform-chip py-1.5 px-3 rounded text-xs font-medium bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors" data-platform="hybrid" type="button">Hall C (In-Person)</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 2: Syllabus Context & Announcement -->
+          <section class="bg-white border border-[#e6e2da] rounded-lg p-6">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-stone-100">
+              <h2 class="text-sm font-semibold text-stone-900">2. Syllabus Brief & Preparation Notes</h2>
+              <span class="text-xs text-stone-400">Step 2 of 3</span>
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex items-center gap-1 bg-stone-50 border border-stone-200 p-1 rounded text-stone-600 text-xs">
+                <button class="px-2 py-1 hover:bg-stone-200 rounded font-bold" id="toolBold" type="button">B</button>
+                <button class="px-2 py-1 hover:bg-stone-200 rounded italic" id="toolItalic" type="button">I</button>
+                <button class="px-2 py-1 hover:bg-stone-200 rounded underline" id="toolUnderline" type="button">U</button>
+                <div class="h-4 w-[1px] bg-stone-200 mx-1"></div>
+                <button class="px-2 py-1 hover:bg-stone-200 rounded" id="toolList" type="button">• List</button>
+                <button class="px-2 py-1 hover:bg-stone-200 rounded" id="toolNumbers" type="button">1. Number</button>
+              </div>
+
+              <textarea class="w-full p-3 bg-white text-stone-900 border border-stone-200 rounded text-xs leading-relaxed focus:outline-none focus:border-stone-400" id="announcementBody" rows="5">Greetings Scholars and Faculty Colleagues,
+
+Please review the attached research brief on kinematic inverse solvers before joining Seminar IV. We will evaluate real-time multi-robot coordination algorithms, followed by a live demonstration on the Digital Twin testbed in Lab 4B.
+
+Attendance is mandatory for Capstone Groups 04, 09, and 12.</textarea>
+            </div>
+          </section>
+
+          <!-- Section 3: Student Selection & Distribution Cohort -->
+          <section class="bg-white border border-[#e6e2da] rounded-lg p-6">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-stone-100">
+              <div class="flex items-center gap-2">
+                <h2 class="text-sm font-semibold text-stone-900">3. Target Student Selection & Delivery</h2>
+                <span class="text-[11px] font-mono bg-stone-100 text-stone-700 px-2 py-0.5 rounded" id="selectedCountBadge">0 Selected</span>
+              </div>
+              <span class="text-xs text-stone-400">Step 3 of 3</span>
+            </div>
+
+            <!-- Distribution Mode Tabs -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+              <div class="recipient-card is-selected p-3 rounded border-2 border-stone-900 bg-stone-50 cursor-pointer transition-colors" data-target="selected">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-semibold text-stone-900">Selected Students</span>
+                  <div class="radio-indicator w-3.5 h-3.5 rounded-full bg-stone-900 flex items-center justify-center text-white text-[10px]">✓</div>
+                </div>
+                <div class="text-[11px] text-stone-600">Pick specific students or enter emails</div>
+              </div>
+
+              <div class="recipient-card p-3 rounded border border-stone-200 hover:border-stone-400 cursor-pointer transition-colors" data-target="capstone">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-medium text-stone-900">Capstone Groups</span>
+                  <div class="radio-indicator w-3.5 h-3.5 rounded-full border border-stone-300"></div>
+                </div>
+                <div class="text-[11px] text-stone-500">Groups 04, 09 & 12</div>
+              </div>
+
+              <div class="recipient-card p-3 rounded border border-stone-200 hover:border-stone-400 cursor-pointer transition-colors" data-target="all">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-medium text-stone-900">Entire EEE Batch</span>
+                  <div class="radio-indicator w-3.5 h-3.5 rounded-full border border-stone-300"></div>
+                </div>
+                <div class="text-[11px] text-stone-500">All enrolled candidates</div>
+              </div>
+            </div>
+
+            <!-- Student Selection Roster Box -->
+            <div class="border border-stone-200 rounded-lg p-4 bg-[#faf9f6] space-y-4" id="studentRosterContainer">
+              
+              <!-- Quick Selector Filter Bar -->
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                  <span class="text-stone-500 mr-1">Quick Select:</span>
+                  <button class="px-2.5 py-1 bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 rounded font-medium text-[11px]" id="btnSelectAll" type="button">Select All</button>
+                  <button class="px-2.5 py-1 bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 rounded text-[11px]" id="btnClearAll" type="button">Clear All</button>
+                  <button class="px-2.5 py-1 bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 rounded text-[11px]" id="btnGroup04" type="button">Group 04</button>
+                  <button class="px-2.5 py-1 bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 rounded text-[11px]" id="btnGroup09" type="button">Group 09</button>
+                  <button class="px-2.5 py-1 bg-white hover:bg-stone-100 text-stone-800 border border-stone-200 rounded text-[11px]" id="btnGroup12" type="button">Group 12</button>
+                </div>
+                
+                <div class="relative w-full sm:w-60">
+                  <span class="material-symbols-outlined absolute left-2.5 top-2 text-stone-400 text-[16px] pointer-events-none">search</span>
+                  <input class="w-full h-8 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400" id="studentSearchInput" placeholder="Filter by name or reg no..." type="text"/>
+                </div>
+              </div>
+
+              <!-- Students Checkbox Roster List -->
+              <div class="max-h-64 overflow-y-auto space-y-1.5 pr-1 divide-y divide-stone-100" id="studentsList">
+                <div class="text-center py-4 text-xs text-stone-400">Loading student directory...</div>
+              </div>
+
+              <!-- Add Custom Recipient Box -->
+              <div class="pt-3 border-t border-stone-200">
+                <label class="block text-xs font-medium text-stone-700 mb-1" for="customEmailInput">
+                  Add Custom Recipient / Test Address:
+                </label>
+                <div class="flex gap-2">
+                  <div class="relative flex-1">
+                    <span class="material-symbols-outlined absolute left-2.5 top-2 text-stone-400 text-[16px] pointer-events-none">alternate_email</span>
+                    <input class="w-full h-8 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400" id="customEmailInput" placeholder="e.g. your-email@gmail.com or student@srmist.edu.in" type="email"/>
+                  </div>
+                  <button class="h-8 px-3 bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium rounded transition-colors whitespace-nowrap flex items-center gap-1" id="btnAddCustomEmail" type="button">
+                    <span class="material-symbols-outlined text-[15px]">person_add</span>
+                    Add Recipient
+                  </button>
+                </div>
+                <div class="flex flex-wrap gap-1.5 mt-2" id="customRecipientsPills"></div>
+              </div>
+
+            </div>
+
+            <!-- Form Actions -->
+            <div class="mt-8 pt-4 border-t border-stone-100 flex items-center justify-between gap-4">
+              <button class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-medium rounded transition-colors" id="draftBtn" type="button">
+                Save Draft
+              </button>
+              <div class="flex items-center gap-3">
+                <button class="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium rounded transition-colors flex items-center gap-1.5" id="sendBtn" type="button">
+                  <span class="material-symbols-outlined text-[16px]">outgoing_mail</span>
+                  Review & Send via SMTP
+                </button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Right: Live Dispatch Preview -->
+        <div class="lg:col-span-4 sticky top-24">
+          <div class="bg-white border border-[#e6e2da] rounded-lg p-5">
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-stone-100">
+              <span class="text-xs font-semibold text-stone-900">Live Email Dispatch Preview</span>
+              <span class="text-[11px] text-stone-500 font-mono">SMTP Payload</span>
+            </div>
+
+            <div class="border border-stone-100 rounded bg-[#faf9f6] p-4 text-xs space-y-3">
+              <!-- Sender Header with Sir's Photo -->
+              <div class="border-b border-stone-200 pb-2.5 flex items-center gap-3">
+                <img alt="Prof. Krishnavel" class="w-10 h-10 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+                <div>
+                  <div class="font-medium text-stone-900">Prof. of Practice Engr. Krishnavel</div>
+                  <div class="text-[11px] text-stone-500">From: <code>srmeeelibraray@gmail.com</code></div>
+                </div>
+              </div>
+
+              <!-- Recipient summary -->
+              <div class="text-[11px] text-stone-600 bg-white p-2 rounded border border-stone-200" id="previewTargetText">
+                To: <span class="font-medium text-stone-900" id="previewRecipientsSummary">Loading recipients...</span>
+              </div>
+
+              <div>
+                <div class="text-sm font-semibold text-stone-900 leading-snug" id="prevTitle">Advanced Industrial Robotics & Digital Twin Architecture - Seminar IV</div>
+                <div class="text-[11px] text-stone-600 mt-1" id="prevSchedule">Thursday, Oct 24, 2024 · 03:30 PM - 05:00 PM IST</div>
+              </div>
+
+              <div class="p-3 bg-white border border-stone-200 rounded text-stone-700 whitespace-pre-wrap leading-relaxed text-[11px]" id="prevBody">Greetings Scholars and Faculty Colleagues,
+
+Please review the attached research brief on kinematic inverse solvers before joining Seminar IV. We will evaluate real-time multi-robot coordination algorithms, followed by a live demonstration on the Digital Twin testbed in Lab 4B.
+
+Attendance is mandatory for Capstone Groups 04, 09, and 12.</div>
+
+              <div class="pt-1">
+                <a class="block w-full py-2 bg-stone-900 text-white text-center rounded text-xs font-medium" href="https://meet.google.com/eng-krish-pract" id="prevActionLink" target="_blank">
+                  Join Academic Teleconference
+                </a>
+              </div>
+            </div>
+
+            <div class="mt-3 text-[11px] text-stone-500 text-center flex items-center justify-center gap-1.5">
+              <span class="material-symbols-outlined text-[15px] text-emerald-600">verified</span>
+              <span>Sends real emails with calendar (.ics) attached</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Pre-Flight Confirmation Modal -->
+  <div class="fixed inset-0 z-50 bg-stone-900/40 backdrop-blur-[1px] hidden flex items-center justify-center p-4" id="confirmationModal">
+    <div class="bg-white border border-stone-200 rounded-lg max-w-lg w-full p-6 shadow-xl space-y-4">
+      <div>
+        <div class="text-xs text-stone-500 mb-1">Pre-Flight Dispatch Review</div>
+        <h3 class="text-base font-semibold text-stone-900" id="modalTitle">Confirm Academic Dispatch</h3>
+        <p class="text-xs text-stone-600 mt-1" id="modalSchedule">Thursday, Oct 24, 2024 · 03:30 PM</p>
+      </div>
+
+      <div class="p-3.5 bg-stone-50 border border-stone-200 rounded text-xs space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-stone-500">Relay Account:</span>
+          <span class="font-mono text-stone-900 font-medium bg-white px-2 py-0.5 rounded border border-stone-200">srmeeelibraray@gmail.com</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-stone-500">Protocol:</span>
+          <span class="font-medium text-emerald-700">Google SMTP (SSL:465)</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-stone-500">Format:</span>
+          <span class="font-medium text-stone-900">Responsive HTML + .ics Calendar invite</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-stone-500">Faculty Principal:</span>
+          <span class="font-medium text-stone-900">Prof. Krishnavel</span>
+        </div>
+        <div class="pt-2 border-t border-stone-200">
+          <div class="text-stone-500 mb-1">Target Recipients (<span id="modalRecipientsCount">0</span>):</div>
+          <div class="max-h-24 overflow-y-auto bg-white p-2 rounded border border-stone-200 font-mono text-[11px] text-stone-700 divide-y divide-stone-100" id="modalRecipientsList">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <input class="rounded text-stone-900 border-stone-300" id="chkSendRealEmail" type="checkbox" checked/>
+        <label class="text-xs text-stone-700 font-medium cursor-pointer" for="chkSendRealEmail">
+          Dispatch real email notifications via SMTP immediately
+        </label>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2 border-t border-stone-100">
+        <button class="px-3.5 py-2 text-xs font-medium text-stone-700 hover:text-stone-900" id="modalCancel" type="button">
+          Cancel
+        </button>
+        <button class="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium rounded transition-colors flex items-center gap-1.5" id="modalConfirm" type="button">
+          <span class="material-symbols-outlined text-[15px]">send</span>
+          <span id="modalConfirmBtnText">Confirm & Dispatch via SMTP</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      let enrolledStudents = [];
+      const selectedStudentEmails = new Set();
+      const customEmails = new Set();
+
+      const titleInput = document.getElementById('sessionTitle');
+      const dateInput = document.getElementById('sessionDate');
+      const timeInput = document.getElementById('sessionTime');
+      const linkInput = document.getElementById('meetingLink');
+      const bodyInput = document.getElementById('announcementBody');
+
+      const prevTitle = document.getElementById('prevTitle');
+      const prevSchedule = document.getElementById('prevSchedule');
+      const prevBody = document.getElementById('prevBody');
+      const prevActionLink = document.getElementById('prevActionLink');
+      const previewRecipientsSummary = document.getElementById('previewRecipientsSummary');
+      const selectedCountBadge = document.getElementById('selectedCountBadge');
+
+      const studentsListEl = document.getElementById('studentsList');
+      const studentSearchInput = document.getElementById('studentSearchInput');
+      const customEmailInput = document.getElementById('customEmailInput');
+      const btnAddCustomEmail = document.getElementById('btnAddCustomEmail');
+      const customRecipientsPills = document.getElementById('customRecipientsPills');
+
+      const modal = document.getElementById('confirmationModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalSchedule = document.getElementById('modalSchedule');
+      const modalRecipientsCount = document.getElementById('modalRecipientsCount');
+      const modalRecipientsList = document.getElementById('modalRecipientsList');
+      const modalCancel = document.getElementById('modalCancel');
+      const modalConfirm = document.getElementById('modalConfirm');
+      const modalConfirmBtnText = document.getElementById('modalConfirmBtnText');
+      const chkSendRealEmail = document.getElementById('chkSendRealEmail');
+
+      const sendBtn = document.getElementById('sendBtn');
+      const draftBtn = document.getElementById('draftBtn');
+
+      let currentCohortMode = 'selected';
+
+      // Load enrolled students roster
+      async function loadStudents() {
+        try {
+          const res = await fetch('/api/students');
+          enrolledStudents = await res.json();
+          // By default, select first 4 students or capstone group 04
+          enrolledStudents.slice(0, 4).forEach(s => selectedStudentEmails.add(s.email));
+          renderStudentsList();
+          updateRecipientsTelemetry();
+        } catch (err) {
+          studentsListEl.innerHTML = '<div class="text-xs text-rose-600 p-2">Failed to load student directory</div>';
+        }
+      }
+
+      function renderStudentsList() {
+        const query = (studentSearchInput.value || '').toLowerCase().trim();
+        const filtered = enrolledStudents.filter(s => {
+          return s.name.toLowerCase().includes(query) ||
+                 s.regNo.toLowerCase().includes(query) ||
+                 s.email.toLowerCase().includes(query) ||
+                 (s.capstoneGroup && s.capstoneGroup.toLowerCase().includes(query));
+        });
+
+        if (filtered.length === 0) {
+          studentsListEl.innerHTML = '<div class="text-xs text-stone-500 p-3 text-center">No students matched search criteria.</div>';
+          return;
+        }
+
+        studentsListEl.innerHTML = filtered.map(s => {
+          const isChecked = selectedStudentEmails.has(s.email);
+          return `
+            <label class="flex items-center justify-between p-2 rounded hover:bg-white cursor-pointer transition-colors ${isChecked ? 'bg-white border border-stone-200' : ''}">
+              <div class="flex items-center gap-2.5">
+                <input type="checkbox" class="student-checkbox rounded text-stone-900 border-stone-300 focus:ring-0" data-email="${s.email}" ${isChecked ? 'checked' : ''}/>
+                <div>
+                  <div class="text-xs font-medium text-stone-900">${s.name}</div>
+                  <div class="text-[11px] text-stone-500 font-mono">${s.regNo} · ${s.email}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 font-medium">${s.batch}</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 font-mono">${s.capstoneGroup || 'General'}</span>
+              </div>
+            </label>
+          `;
+        }).join('');
+
+        // Attach listeners
+        studentsListEl.querySelectorAll('.student-checkbox').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            const email = cb.getAttribute('data-email');
+            if (cb.checked) {
+              selectedStudentEmails.add(email);
+            } else {
+              selectedStudentEmails.delete(email);
+            }
+            updateRecipientsTelemetry();
+          });
+        });
+      }
+
+      function updateRecipientsTelemetry() {
+        const allSelected = getAllRecipients();
+        selectedCountBadge.textContent = `${allSelected.length} Recipient${allSelected.length === 1 ? '' : 's'}`;
+        
+        if (allSelected.length === 0) {
+          previewRecipientsSummary.textContent = 'None selected (Please select at least 1 student)';
+        } else if (allSelected.length === 1) {
+          previewRecipientsSummary.textContent = allSelected[0];
+        } else if (allSelected.length <= 3) {
+          previewRecipientsSummary.textContent = allSelected.join(', ');
+        } else {
+          previewRecipientsSummary.textContent = `${allSelected[0]}, ${allSelected[1]} and ${allSelected.length - 2} other students`;
+        }
+      }
+
+      function getAllRecipients() {
+        const list = Array.from(selectedStudentEmails).concat(Array.from(customEmails));
+        return Array.from(new Set(list));
+      }
+
+      function renderCustomPills() {
+        customRecipientsPills.innerHTML = Array.from(customEmails).map(email => `
+          <span class="inline-flex items-center gap-1 text-[11px] bg-stone-200 text-stone-800 px-2 py-0.5 rounded-full font-mono">
+            ${email}
+            <button type="button" class="text-stone-500 hover:text-stone-900" data-remove-email="${email}">×</button>
+          </span>
+        `).join('');
+
+        customRecipientsPills.querySelectorAll('button[data-remove-email]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const email = btn.getAttribute('data-remove-email');
+            customEmails.delete(email);
+            renderCustomPills();
+            updateRecipientsTelemetry();
+          });
+        });
+      }
+
+      btnAddCustomEmail.addEventListener('click', () => {
+        const email = customEmailInput.value.trim().toLowerCase();
+        if (!email || !email.includes('@')) {
+          showPortalToast('Invalid Email', 'Please enter a valid recipient email address', 'error');
+          return;
+        }
+        customEmails.add(email);
+        customEmailInput.value = '';
+        renderCustomPills();
+        updateRecipientsTelemetry();
+        showPortalToast('Recipient Added', email, 'success');
+      });
+
+      customEmailInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          btnAddCustomEmail.click();
+        }
+      });
+
+      // Quick filter buttons
+      document.getElementById('btnSelectAll').addEventListener('click', () => {
+        enrolledStudents.forEach(s => selectedStudentEmails.add(s.email));
+        renderStudentsList();
+        updateRecipientsTelemetry();
+      });
+
+      document.getElementById('btnClearAll').addEventListener('click', () => {
+        selectedStudentEmails.clear();
+        customEmails.clear();
+        renderCustomPills();
+        renderStudentsList();
+        updateRecipientsTelemetry();
+      });
+
+      document.getElementById('btnGroup04').addEventListener('click', () => {
+        selectedStudentEmails.clear();
+        enrolledStudents.filter(s => s.capstoneGroup === 'Group 04').forEach(s => selectedStudentEmails.add(s.email));
+        renderStudentsList();
+        updateRecipientsTelemetry();
+      });
+
+      document.getElementById('btnGroup09').addEventListener('click', () => {
+        selectedStudentEmails.clear();
+        enrolledStudents.filter(s => s.capstoneGroup === 'Group 09').forEach(s => selectedStudentEmails.add(s.email));
+        renderStudentsList();
+        updateRecipientsTelemetry();
+      });
+
+      document.getElementById('btnGroup12').addEventListener('click', () => {
+        selectedStudentEmails.clear();
+        enrolledStudents.filter(s => s.capstoneGroup === 'Group 12').forEach(s => selectedStudentEmails.add(s.email));
+        renderStudentsList();
+        updateRecipientsTelemetry();
+      });
+
+      studentSearchInput.addEventListener('input', renderStudentsList);
+
+      // Inputs sync with preview
+      titleInput.addEventListener('input', () => { prevTitle.textContent = titleInput.value || 'Untitled Session'; });
+      dateInput.addEventListener('input', updateSchedule);
+      timeInput.addEventListener('input', updateSchedule);
+      function updateSchedule() { prevSchedule.textContent = `${dateInput.value} · ${timeInput.value}`; }
+      bodyInput.addEventListener('input', () => { prevBody.textContent = bodyInput.value; });
+      linkInput.addEventListener('input', () => { prevActionLink.setAttribute('href', linkInput.value || '#'); });
+
+      // Platform pills
+      document.querySelectorAll('.platform-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.platform-chip').forEach(b => {
+            b.className = 'platform-chip py-1.5 px-3 rounded text-xs font-medium bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors';
+          });
+          btn.className = 'platform-chip py-1.5 px-3 rounded text-xs font-medium bg-stone-900 text-white transition-colors';
+
+          const p = btn.getAttribute('data-platform');
+          if (p === 'meet') {
+            linkInput.value = 'https://meet.google.com/eng-krish-pract';
+            document.getElementById('detectedPlatformBadge').textContent = 'Google Meet';
+          } else if (p === 'teams') {
+            linkInput.value = 'https://teams.microsoft.com/l/meetup-join/academic-engr';
+            document.getElementById('detectedPlatformBadge').textContent = 'MS Teams';
+          } else if (p === 'zoom') {
+            linkInput.value = 'https://zoom.us/j/84920491823';
+            document.getElementById('detectedPlatformBadge').textContent = 'Zoom Room';
+          } else {
+            linkInput.value = 'Hall C, Advanced Mechatronics Wing';
+            document.getElementById('detectedPlatformBadge').textContent = 'Hall C (In-Person)';
+          }
+          prevActionLink.setAttribute('href', linkInput.value);
+        });
+      });
+
+      // Recipient Mode Cards
+      const recipientCards = document.querySelectorAll('.recipient-card');
+      recipientCards.forEach(card => {
+        card.addEventListener('click', () => {
+          recipientCards.forEach(c => {
+            c.className = 'recipient-card p-3 rounded border border-stone-200 hover:border-stone-400 cursor-pointer transition-colors';
+            c.querySelector('.radio-indicator').className = 'radio-indicator w-3.5 h-3.5 rounded-full border border-stone-300';
+            c.querySelector('.radio-indicator').innerHTML = '';
+          });
+
+          card.className = 'recipient-card is-selected p-3 rounded border-2 border-stone-900 bg-stone-50 cursor-pointer transition-colors';
+          const ind = card.querySelector('.radio-indicator');
+          ind.className = 'radio-indicator w-3.5 h-3.5 rounded-full bg-stone-900 flex items-center justify-center text-white text-[10px]';
+          ind.innerHTML = '✓';
+
+          currentCohortMode = card.getAttribute('data-target');
+          if (currentCohortMode === 'capstone') {
+            selectedStudentEmails.clear();
+            enrolledStudents.filter(s => s.capstoneGroup && s.capstoneGroup.includes('Group')).forEach(s => selectedStudentEmails.add(s.email));
+            renderStudentsList();
+            updateRecipientsTelemetry();
+          } else if (currentCohortMode === 'all') {
+            enrolledStudents.forEach(s => selectedStudentEmails.add(s.email));
+            renderStudentsList();
+            updateRecipientsTelemetry();
+          }
+        });
+      });
+
+      document.getElementById('testLinkBtn').addEventListener('click', () => {
+        const url = linkInput.value.trim();
+        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+          window.open(url, '_blank');
+        } else {
+          showPortalToast('Location', url, 'info');
+        }
+      });
+
+      draftBtn.addEventListener('click', async () => {
+        const recipients = getAllRecipients();
+        try {
+          await fetch('/api/sessions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: titleInput.value.trim() || 'Untitled Draft',
+              date: dateInput.value.trim(),
+              time: timeInput.value.trim(),
+              link: linkInput.value.trim(),
+              notes: bodyInput.value.trim(),
+              status: 'drafts',
+              selectedRecipients: recipients,
+              recipientCount: recipients.length
+            })
+          });
+          showPortalToast('Draft Saved', 'Session saved with selected student recipients.', 'success');
+        } catch (e) {
+          showPortalToast('Notice', 'Draft stored locally.', 'info');
+        }
+      });
+
+      // Send Button Opens Pre-Flight Review Modal
+      sendBtn.addEventListener('click', () => {
+        const recipients = getAllRecipients();
+        if (recipients.length === 0) {
+          showPortalToast('No Recipients Selected', 'Please check at least one student or add a custom email address.', 'warning');
+          return;
+        }
+
+        modalTitle.textContent = titleInput.value.trim() || 'Untitled Session';
+        modalSchedule.textContent = `${dateInput.value.trim()} · ${timeInput.value.trim()}`;
+        modalRecipientsCount.textContent = recipients.length;
+        modalRecipientsList.innerHTML = recipients.map(r => `<div>${r}</div>`).join('');
+        modal.classList.remove('hidden');
+      });
+
+      modalCancel.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+
+      modalConfirm.addEventListener('click', async () => {
+        const recipients = getAllRecipients();
+        const shouldSendRealEmail = chkSendRealEmail.checked;
+
+        modalConfirm.disabled = true;
+        modalConfirmBtnText.textContent = shouldSendRealEmail ? 'Dispatching via Google SMTP...' : 'Scheduling...';
+
+        try {
+          const res = await fetch('/api/sessions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: titleInput.value.trim() || 'Advanced Industrial Robotics & Digital Twin Architecture - Seminar IV',
+              date: dateInput.value.trim(),
+              time: timeInput.value.trim(),
+              link: linkInput.value.trim(),
+              notes: bodyInput.value.trim(),
+              status: 'upcoming',
+              sendMail: shouldSendRealEmail,
+              selectedRecipients: recipients,
+              recipientCount: recipients.length
+            })
+          });
+          const data = await res.json();
+
+          modal.classList.add('hidden');
+          
+          if (data.dispatchResult && data.dispatchResult.success) {
+            showPortalToast('SMTP Dispatch Delivered', `Successfully sent to ${data.dispatchResult.deliveredCount} student mailbox(es) via srmeeelibraray@gmail.com!`, 'success', 5000);
+          } else {
+            showPortalToast('Session Scheduled', `${recipients.length} students enrolled for session.`, 'success', 4000);
+          }
+
+          setTimeout(() => {
+            window.location.href = '/session-archive-history';
+          }, 1000);
+        } catch (err) {
+          modal.classList.add('hidden');
+          showPortalToast('Error', err.message, 'error');
+        } finally {
+          modalConfirm.disabled = false;
+          modalConfirmBtnText.textContent = 'Confirm & Dispatch via SMTP';
+        }
+      });
+
+      loadStudents();
+    })();
+  </script>
+  <script src="/shared-portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Pre-Flight Dispatch Review · Academic Session Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/shared-portal.css"/>
+</head>
+<body class="bg-[#faf9f6] text-[#1c1917] font-['Inter',sans-serif] antialiased">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-white border-b border-[#e6e2da]">
+    <div class="h-16 max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="/dashboard" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+          <img alt="Prof. Krishnavel" class="w-9 h-9 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+          <div class="flex flex-col">
+            <span class="text-sm font-medium text-[#1c1917] leading-tight">Prof. Krishnavel · Academic Portal</span>
+            <span class="text-[11px] text-[#78716c]">Department of Electrical & Electronics Engineering</span>
+          </div>
+        </a>
+        <nav class="hidden xl:flex items-center gap-1 ml-4">
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="dashboard-overview" href="/dashboard">Dashboard</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="schedule-session" href="/schedule-session">Schedule Session</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="session-archive-history" href="/session-archive-history">Session Archive</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="email-dispatches-templates" href="/student-faculty-email-template">Email Templates</a>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <button aria-label="Notifications" class="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded transition-colors flex items-center justify-center relative" type="button">
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+            <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-stone-900"></span>
+          </button>
+        </div>
+        <div class="h-5 w-[1px] bg-stone-200"></div>
+        <div class="flex items-center gap-3">
+          <div class="flex flex-col text-right hidden sm:flex">
+            <span class="text-xs font-medium text-stone-900 leading-tight">Prof. Krishnavel</span>
+            <span class="text-[11px] text-stone-500">Senior Faculty Advisor</span>
+          </div>
+          <img alt="Profile" class="w-8 h-8 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+          <a class="p-1.5 text-stone-500 hover:text-stone-900 rounded transition-colors" data-path="login" href="/login" title="Sign Out">
+            <span class="material-symbols-outlined text-[18px]">logout</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full pt-20">
+    <div class="max-w-4xl mx-auto px-6 py-8 pb-16">
+      
+      <!-- Modal Container as Main Card -->
+      <div class="bg-white border border-[#e6e2da] rounded-lg p-8 shadow-sm space-y-6">
+        
+        <!-- Header -->
+        <div class="border-b border-stone-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="text-xs text-stone-500 font-medium mb-1">Pre-Flight Dispatch Review</div>
+            <h1 class="font-['Newsreader',serif] text-2xl font-normal text-stone-900">Verification & Recipient Summary</h1>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+            <span class="text-xs text-stone-600 font-mono" id="relayStatusText">SMTP: srmeeelibraray@gmail.com</span>
+          </div>
+        </div>
+
+        <!-- Telemetry & Distribution Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="p-4 bg-stone-50 border border-stone-200 rounded text-center">
+            <div class="text-xs text-stone-500 mb-1">Target Recipients</div>
+            <div class="text-2xl font-medium text-stone-900 tabular-nums" id="selectedRecipientsCount">4</div>
+            <div class="text-[11px] text-stone-500 mt-1">Designated Students</div>
+          </div>
+          <div class="p-4 bg-stone-50 border border-stone-200 rounded text-center">
+            <div class="text-xs text-stone-500 mb-1">Faculty Principal</div>
+            <div class="text-sm font-semibold text-stone-900 mt-1">Prof. Krishnavel</div>
+            <div class="text-[11px] text-stone-500 mt-1">SRM EEE Advisory</div>
+          </div>
+          <div class="p-4 bg-stone-50 border border-stone-200 rounded text-center">
+            <div class="text-xs text-stone-500 mb-1">Delivery Protocol</div>
+            <div class="text-2xl font-medium text-[#15803d] tabular-nums">100%</div>
+            <div class="text-[11px] text-stone-500 mt-1">Direct Google SMTP Relay</div>
+          </div>
+        </div>
+
+        <!-- Session Overview Card -->
+        <div class="p-5 border border-stone-200 rounded-lg bg-[#faf9f6] space-y-3 text-xs">
+          <div class="flex items-start gap-4">
+            <img alt="Prof. Krishnavel" class="w-12 h-12 rounded-full object-cover border border-stone-300 mt-0.5" src="/professor_krishnavel.jpg"/>
+            <div class="space-y-1 flex-1">
+              <div class="text-[11px] text-stone-500 font-medium uppercase">Session Agenda & Dispatch Payload</div>
+              <div class="text-sm font-semibold text-stone-900 leading-snug" id="dispTitle">
+                Advanced Industrial Robotics & Digital Twin Architecture · Seminar IV
+              </div>
+              <div class="text-xs text-stone-600 font-medium" id="dispSchedule">
+                Thursday, Oct 24, 2024 · 03:30 PM - 05:00 PM IST
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-stone-700 pt-2 border-t border-stone-200">
+            <div>
+              <span class="text-stone-500">Teleconference Gateway:</span>
+              <a href="https://meet.google.com/eng-krish-pract" target="_blank" class="font-medium text-blue-700 hover:underline ml-1" id="dispLink">
+                https://meet.google.com/eng-krish-pract
+              </a>
+            </div>
+            <div>
+              <span class="text-stone-500">Calendar Invitation:</span>
+              <span class="font-medium text-stone-800 ml-1">Attached RFC-5545 .ics</span>
+            </div>
+          </div>
+
+          <div class="pt-2 text-stone-600 leading-relaxed border-t border-stone-200/80" id="dispNotes">
+            <strong>Directives:</strong> Please review kinematic inverse solvers technical brief before joining. Live digital twin demonstration in Lab 4B. Attendance mandatory for Capstone Groups 04, 09, and 12.
+          </div>
+        </div>
+
+        <!-- Target Student Recipients List -->
+        <div class="p-4 border border-stone-200 rounded-lg bg-white space-y-3 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-stone-900">Selected Recipient Mailboxes:</span>
+            <span class="text-[11px] text-stone-500 font-mono" id="recipientBadge">4 addresses queued</span>
+          </div>
+
+          <div class="max-h-36 overflow-y-auto space-y-1.5 bg-stone-50 p-2.5 rounded border border-stone-200 text-stone-700 font-mono text-[11px]" id="recipientsContainer">
+            <div class="flex items-center justify-between py-0.5">
+              <span>arunkumar.srmeee@gmail.com</span>
+              <span class="text-stone-400">Arun Kumar (Group 04)</span>
+            </div>
+            <div class="flex items-center justify-between py-0.5">
+              <span>priyavenkat.srmeee@gmail.com</span>
+              <span class="text-stone-400">Priya Venkatesh (Group 04)</span>
+            </div>
+            <div class="flex items-center justify-between py-0.5">
+              <span>rahulsharma.srmeee@gmail.com</span>
+              <span class="text-stone-400">Rahul Sharma (Group 04)</span>
+            </div>
+            <div class="flex items-center justify-between py-0.5">
+              <span>srmeeelibraray@gmail.com</span>
+              <span class="text-stone-400">Faculty Advisory Copy</span>
+            </div>
+          </div>
+
+          <!-- Add test email on the fly -->
+          <div class="flex gap-2 pt-1">
+            <input class="flex-1 h-8 px-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400" id="quickAddInput" placeholder="Add custom recipient email..." type="email"/>
+            <button class="h-8 px-3 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded font-medium text-xs transition-colors" id="btnQuickAdd" type="button">
+              + Add Email
+            </button>
+          </div>
+        </div>
+
+        <!-- Checklist -->
+        <div class="p-4 border border-stone-200 rounded-lg bg-white space-y-2 text-xs">
+          <div class="font-medium text-stone-900">Pre-Flight Verification Checklist:</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-stone-600">
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[#15803d] text-[16px]">check_circle</span>
+              <span>SMTP relay authenticated</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[#15803d] text-[16px]">check_circle</span>
+              <span>Calendar invite attached (.ics)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[#15803d] text-[16px]">check_circle</span>
+              <span>Prof. Krishnavel portrait embedded</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="pt-4 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <button class="w-full sm:w-auto px-4 py-2 border border-stone-200 text-stone-700 hover:bg-stone-50 rounded text-xs font-medium transition-colors" onclick="window.location.href='/schedule-session'" type="button">
+            Cancel & Return to Schedule
+          </button>
+          <button class="w-full sm:w-auto px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-2" id="confirm-btn" onclick="executeDispatch()" type="button">
+            <span class="material-symbols-outlined text-[16px]">send</span>
+            <span id="confirm-btn-label">Confirm & Dispatch via SMTP</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const recipientEmails = [
+      'arunkumar.srmeee@gmail.com',
+      'priyavenkat.srmeee@gmail.com',
+      'rahulsharma.srmeee@gmail.com',
+      'srmeeelibraray@gmail.com'
+    ];
+
+    function renderRecipients() {
+      const container = document.getElementById('recipientsContainer');
+      const badge = document.getElementById('recipientBadge');
+      const countEl = document.getElementById('selectedRecipientsCount');
+
+      countEl.textContent = recipientEmails.length;
+      badge.textContent = `${recipientEmails.length} addresses queued`;
+
+      container.innerHTML = recipientEmails.map((email, idx) => `
+        <div class="flex items-center justify-between py-1">
+          <span>${email}</span>
+          <button type="button" class="text-stone-400 hover:text-stone-700 text-xs" onclick="removeEmail(${idx})">×</button>
+        </div>
+      `).join('');
+    }
+
+    function removeEmail(idx) {
+      recipientEmails.splice(idx, 1);
+      renderRecipients();
+    }
+
+    document.getElementById('btnQuickAdd').addEventListener('click', () => {
+      const input = document.getElementById('quickAddInput');
+      const email = input.value.trim().toLowerCase();
+      if (!email || !email.includes('@')) {
+        showPortalToast('Invalid Email', 'Please enter a valid email address', 'error');
+        return;
+      }
+      recipientEmails.push(email);
+      input.value = '';
+      renderRecipients();
+      showPortalToast('Recipient Queued', email, 'success');
+    });
+
+    async function executeDispatch() {
+      const btn = document.getElementById('confirm-btn');
+      const label = document.getElementById('confirm-btn-label');
+      if (recipientEmails.length === 0) {
+        showPortalToast('No Recipients', 'Please add at least one recipient email address.', 'warning');
+        return;
+      }
+
+      btn.disabled = true;
+      label.textContent = 'Dispatching via Google SMTP...';
+
+      try {
+        const response = await fetch('/api/smtp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            recipients: recipientEmails,
+            session: {
+              title: document.getElementById('dispTitle').innerText.trim(),
+              date: 'Thursday, Oct 24, 2024',
+              time: '03:30 PM - 05:00 PM IST',
+              link: document.getElementById('dispLink').innerText.trim(),
+              notes: document.getElementById('dispNotes').innerText.trim()
+            }
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showPortalToast('Dispatches Delivered', `Successfully distributed to ${data.deliveredCount} recipients via srmeeelibraray@gmail.com!`, 'success', 5000);
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 1200);
+        } else {
+          showPortalToast('Dispatch Notice', data.error || 'Failed to dispatch emails', 'error');
+        }
+      } catch (err) {
+        showPortalToast('Transmission Error', err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        label.textContent = 'Confirm & Dispatch via SMTP';
+      }
+    }
+
+    renderRecipients();
+  </script>
+  <script src="/shared-portal.js"></script>
+</body>
+</html>

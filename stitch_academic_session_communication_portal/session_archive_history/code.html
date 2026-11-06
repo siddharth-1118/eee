@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Session Archive · Academic Session Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/shared-portal.css"/>
+</head>
+<body class="bg-[#faf9f6] text-[#1c1917] font-['Inter',sans-serif] antialiased">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-white border-b border-[#e6e2da]">
+    <div class="h-16 max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <a href="/dashboard" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+          <img alt="Prof. Krishnavel" class="w-8 h-8 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+          <div class="flex flex-col">
+            <span class="text-sm font-medium text-[#1c1917] leading-tight">Prof. Krishnavel · Academic Portal</span>
+            <span class="text-[11px] text-[#78716c]">Department of Engineering</span>
+          </div>
+        </a>
+        <nav class="hidden xl:flex items-center gap-1 ml-4">
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="dashboard-overview" href="/dashboard">Dashboard</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="schedule-session" href="/schedule-session">Schedule Session</a>
+          <a class="px-3 py-1.5 rounded text-sm font-medium bg-stone-100 text-stone-900 border border-stone-200 transition-colors" data-path="session-archive-history" href="/session-archive-history" aria-current="page">Session Archive</a>
+          <a class="px-3 py-1.5 rounded text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-colors" data-path="email-dispatches-templates" href="/student-faculty-email-template">Email Templates</a>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <button aria-label="Notifications" class="p-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded transition-colors flex items-center justify-center relative" type="button">
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+            <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-stone-900"></span>
+          </button>
+        </div>
+        <div class="h-5 w-[1px] bg-stone-200"></div>
+        <div class="flex items-center gap-3">
+          <div class="flex flex-col text-right hidden sm:flex">
+            <span class="text-xs font-medium text-stone-900 leading-tight">Prof. Krishnavel</span>
+            <span class="text-[11px] text-stone-500">Senior Faculty Advisor</span>
+          </div>
+          <img alt="Profile" class="w-8 h-8 rounded-full object-cover border border-stone-200" src="/professor_krishnavel.jpg"/>
+          <a class="p-1.5 text-stone-500 hover:text-stone-900 rounded transition-colors" data-path="login" href="/login" title="Sign Out">
+            <span class="material-symbols-outlined text-[18px]">logout</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full pt-20">
+    <div class="max-w-7xl mx-auto px-6 py-6 pb-16">
+      
+      <!-- Page Context & Controls -->
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
+        <div>
+          <div class="text-xs text-stone-500 font-medium mb-1">Faculty Records · Semester II AY 2024–25</div>
+          <h1 class="font-['Newsreader',serif] text-2xl font-normal text-stone-900">Session Archive & Records</h1>
+          <p class="text-xs text-stone-600 mt-1 max-w-2xl">
+            Directory of scheduled convocations, completed research reviews, and working drafts.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-stone-600">
+          <span class="tabular-nums font-medium text-stone-900">45</span> total sessions recorded
+        </div>
+      </div>
+
+      <!-- Controls Hub: Search, Filter, Actions -->
+      <div class="bg-white border border-[#e6e2da] rounded-lg p-4 mb-6 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          
+          <!-- Search -->
+          <div class="relative flex-1 max-w-md">
+            <input class="w-full pl-8 pr-3 py-1.5 bg-stone-50 border border-stone-200 rounded text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:border-stone-400" id="sessionSearchInput" placeholder="Search by title, cohort, or syllabus topic..." type="text"/>
+            <span class="material-symbols-outlined text-stone-400 text-[16px] absolute left-2.5 top-2 pointer-events-none">search</span>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <select class="h-8 pl-2 pr-6 bg-stone-50 border border-stone-200 rounded text-xs text-stone-700 focus:outline-none" id="recipientFilter">
+              <option value="all">All Cohorts (368+)</option>
+              <option value="both">Both (Students & Faculty)</option>
+              <option value="faculty">Faculty Only</option>
+              <option value="students">Students Only</option>
+            </select>
+            <button class="h-8 px-3 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-medium rounded transition-colors flex items-center gap-1.5" onclick="exportSessionsCSV()" type="button">
+              <span class="material-symbols-outlined text-[16px]">download</span>
+              Export CSV
+            </button>
+            <button class="h-8 px-3.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium rounded transition-colors flex items-center gap-1.5" onclick="window.location.href='/schedule-session'" type="button">
+              <span class="material-symbols-outlined text-[16px]">add</span>
+              New Session
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-1 border-t border-stone-100 pt-3">
+          <button class="filter-tab px-3 py-1 rounded text-xs font-medium bg-stone-900 text-white" onclick="setActiveTab(this, 'all')">
+            All (45)
+          </button>
+          <button class="filter-tab px-3 py-1 rounded text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-100" onclick="setActiveTab(this, 'upcoming')">
+            Upcoming (4)
+          </button>
+          <button class="filter-tab px-3 py-1 rounded text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-100" onclick="setActiveTab(this, 'completed')">
+            Completed (40)
+          </button>
+          <button class="filter-tab px-3 py-1 rounded text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-100" onclick="setActiveTab(this, 'drafts')">
+            Drafts (1)
+          </button>
+        </div>
+      </div>
+
+      <!-- Ledger Table -->
+      <div class="bg-white border border-[#e6e2da] rounded-lg overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="bg-stone-50 text-stone-600 border-b border-stone-200">
+                <th class="py-2.5 px-4 font-medium">Session & Scope</th>
+                <th class="py-2.5 px-4 font-medium">Schedule</th>
+                <th class="py-2.5 px-4 font-medium">Distribution</th>
+                <th class="py-2.5 px-4 font-medium">Delivery</th>
+                <th class="py-2.5 px-4 font-medium">Status</th>
+                <th class="py-2.5 px-4 font-medium text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 text-stone-800" id="sessionRowsList">
+              
+              <!-- Row 1 -->
+              <tr class="session-row hover:bg-stone-50/60 transition-colors" data-recipient="both" data-status="upcoming">
+                <td class="py-3 px-4">
+                  <div class="font-medium text-stone-900 session-title">Advanced Industrial Robotics & Digital Twin Architecture - Seminar IV</div>
+                  <div class="text-[11px] text-stone-500 session-cohort">Mechatronics Cohort · Autonomous Systems Lab B-14</div>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap tabular-nums">
+                  <div>Oct 24, 2024 · 03:30 PM</div>
+                  <div class="text-[11px] text-stone-500">90 min convocation</div>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-stone-600">All (368 recipients)</td>
+                <td class="py-3 px-4 whitespace-nowrap tabular-nums text-stone-600">99.4%</td>
+                <td class="py-3 px-4 whitespace-nowrap">
+                  <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Upcoming</span>
+                </td>
+                <td class="py-3 px-4 text-right whitespace-nowrap">
+                  <div class="flex items-center justify-end gap-1">
+                    <button class="px-2 py-1 text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded text-[11px]" onclick="openEditDrawer('Advanced Industrial Robotics & Digital Twin Architecture', 'Oct 24, 2024, 03:30 PM', 'Both', 'Upcoming', 368)">Edit</button>
+                    <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/student-faculty-email-template'" title="Preview"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+                    <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="deleteSession(this)" title="Cancel"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr class="session-row hover:bg-stone-50/60 transition-colors" data-recipient="faculty" data-status="completed">
+                <td class="py-3 px-4">
+                  <div class="font-medium text-stone-900 session-title">PhD Colloquium: Autonomous Microgrid Control</div>
+                  <div class="text-[11px] text-stone-500 session-cohort">Research Scholars · Auditorium Hall B</div>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap tabular-nums">
+                  <div>Oct 18, 2024 · 02:00 PM</div>
+                  <div class="text-[11px] text-stone-500">90 min lecture</div>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-stone-600">Faculty Only (48 sent)</td>
+                <td class="py-3 px-4 whitespace-nowrap tabular-nums text-stone-600">100%</td>
+                <td class="py-3 px-4 whitespace-nowrap">
+                  <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-stone-100 text-stone-700 border border-stone-200">Completed</span>
+                </td>
+                <td class="py-3 px-4 text-right whitespace-nowrap">
+                  <div class="flex items-center justify-end gap-1">
+                    <button class="px-2 py-1 text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded text-[11px]" onclick="openEditDrawer('PhD Colloquium: Autonomous Microgrid Control', 'Oct 18, 2024, 02:00 PM', 'Faculty Only', 'Completed', 48)">Edit</button>
+                    <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/student-faculty-email-template'" title="Preview"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+                    <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="deleteSession(this)" title="Cancel"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr class="session-row hover:bg-stone-50/60 transition-colors" data-recipient="both" data-status="upcoming">
+                <td class="py-3 px-4">
+                  <div class="font-medium text-stone-900 session-title">Senior Capstone Defense Prep · Grp VII</div>
+                  <div class="text-[11px] text-stone-500 session-cohort">ECE Dept · Room 304B</div>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap tabular-nums">
+                  <div>Today · 11:30 AM</div>
+                  <div class="text-[11px] text-stone-500">45 min advisory</div>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-stone-600">All (368 recipients)</td>
+                <td class="py-3 px-4 whitespace-nowrap tabular-nums text-stone-600">99.8%</td>
+                <td class="py-3 px-4 whitespace-nowrap">
+                  <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Upcoming</span>
+                </td>
+                <td class="py-3 px-4 text-right whitespace-nowrap">
+                  <div class="flex items-center justify-end gap-1">
+                    <button class="px-2 py-1 text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded text-[11px]" onclick="openEditDrawer('Senior Capstone Defense Prep', 'Today, 11:30 AM', 'Both', 'Upcoming', 368)">Edit</button>
+                    <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/student-faculty-email-template'" title="Preview"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+                    <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="deleteSession(this)" title="Cancel"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr class="session-row hover:bg-stone-50/60 transition-colors" data-recipient="students" data-status="drafts">
+                <td class="py-3 px-4">
+                  <div class="font-medium text-stone-900 session-title">Special Topics in Embedded Firmware Systems</div>
+                  <div class="text-[11px] text-stone-500 session-cohort">Open Elective · Zoom ID: 884-219</div>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap tabular-nums">
+                  <div>Thu · 10:00 AM</div>
+                  <div class="text-[11px] text-stone-500">60 min masterclass</div>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-stone-600">Students Only (320)</td>
+                <td class="py-3 px-4 whitespace-nowrap tabular-nums text-stone-400">—</td>
+                <td class="py-3 px-4 whitespace-nowrap">
+                  <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-stone-100 text-stone-600 border border-stone-200">Draft</span>
+                </td>
+                <td class="py-3 px-4 text-right whitespace-nowrap">
+                  <div class="flex items-center justify-end gap-1">
+                    <button class="px-2 py-1 text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded text-[11px]" onclick="openEditDrawer('Special Topics in Embedded Firmware Systems', 'Thu, 10:00 AM', 'Students Only', 'Draft', 320)">Edit</button>
+                    <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="window.location.href='/student-faculty-email-template'" title="Preview"><span class="material-symbols-outlined text-[16px]">visibility</span></button>
+                    <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="deleteSession(this)" title="Delete"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-3 border-t border-stone-200 flex items-center justify-between text-xs text-stone-500">
+          <span>Archived records synchronized with registrar database</span>
+          <span class="tabular-nums">Page 1 of 1</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Slide-Over Edit Drawer -->
+  <div class="fixed inset-0 z-50 bg-stone-900/40 backdrop-blur-[1px] hidden transition-opacity" id="editSessionDrawerBackdrop">
+    <div class="fixed inset-y-0 right-0 max-w-md w-full bg-white border-l border-stone-200 shadow-xl flex flex-col translate-x-full transition-transform duration-200" id="editSessionDrawerPanel">
+      
+      <div class="p-5 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+        <div>
+          <h3 class="text-sm font-semibold text-stone-900">Edit Session Record</h3>
+          <p class="text-xs text-stone-500">Update timetable parameters and cohort access</p>
+        </div>
+        <button class="p-1 text-stone-500 hover:text-stone-900 rounded" onclick="closeEditDrawer()">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 flex-1 overflow-y-auto text-xs">
+        <div>
+          <label class="block font-medium text-stone-700 mb-1">Session Title</label>
+          <input class="w-full h-8 px-2.5 bg-white border border-stone-200 rounded text-stone-900 focus:outline-none focus:border-stone-400" id="drawerSessionTitle" type="text"/>
+        </div>
+
+        <div>
+          <label class="block font-medium text-stone-700 mb-1">Target Group</label>
+          <select class="w-full h-8 px-2 bg-white border border-stone-200 rounded text-stone-900 focus:outline-none" id="drawerRecipientGroup">
+            <option value="Both">Both (Students & Faculty)</option>
+            <option value="Faculty Only">Faculty Only</option>
+            <option value="Students Only">Students Only</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-medium text-stone-700 mb-1">Lifecycle Status</label>
+          <select class="w-full h-8 px-2 bg-white border border-stone-200 rounded text-stone-900 focus:outline-none" id="drawerSessionStatus">
+            <option value="Upcoming">Upcoming</option>
+            <option value="Completed">Completed</option>
+            <option value="Drafts">Draft</option>
+          </select>
+        </div>
+
+        <div class="p-3 bg-stone-50 border border-stone-200 rounded text-stone-600 space-y-1">
+          <div class="font-medium text-stone-800">Notice on Schedule Changes</div>
+          <div>Updating the date or teleconference URL automatically distributes a revision bulletin to enrolled recipients.</div>
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-stone-200 bg-stone-50 flex items-center justify-end gap-3">
+        <button class="px-3.5 py-1.5 text-xs text-stone-600 hover:text-stone-900" onclick="closeEditDrawer()" type="button">Cancel</button>
+        <button class="px-4 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-medium" onclick="saveAndDispatch()" type="button">Save Record</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function setActiveTab(button, category) {
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.className = 'filter-tab px-3 py-1 rounded text-xs text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors';
+      });
+      button.className = 'filter-tab px-3 py-1 rounded text-xs font-medium bg-stone-900 text-white transition-colors';
+
+      const rows = document.querySelectorAll('.session-row');
+      rows.forEach(row => {
+        const rowStatus = row.getAttribute('data-status');
+        if (category === 'all' || rowStatus === category) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    const recipientSelect = document.getElementById('recipientFilter');
+    if (recipientSelect) {
+      recipientSelect.addEventListener('change', (e) => {
+        const val = e.target.value;
+        const rows = document.querySelectorAll('.session-row');
+        rows.forEach(row => {
+          const rec = row.getAttribute('data-recipient');
+          if (val === 'all' || rec === val) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    const searchInput = document.getElementById('sessionSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.session-row');
+        rows.forEach(row => {
+          row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
+        });
+      });
+    }
+
+    function openEditDrawer(title, dateInfo, recipient, status, count) {
+      const backdrop = document.getElementById('editSessionDrawerBackdrop');
+      const panel = document.getElementById('editSessionDrawerPanel');
+      const titleInput = document.getElementById('drawerSessionTitle');
+      const groupSelect = document.getElementById('drawerRecipientGroup');
+      const statusSelect = document.getElementById('drawerSessionStatus');
+
+      if (titleInput && title) titleInput.value = title;
+      if (groupSelect && recipient) groupSelect.value = recipient;
+      if (statusSelect && status) statusSelect.value = status;
+
+      backdrop.classList.remove('hidden');
+      setTimeout(() => {
+        panel.classList.remove('translate-x-full');
+      }, 10);
+    }
+
+    function closeEditDrawer() {
+      const backdrop = document.getElementById('editSessionDrawerBackdrop');
+      const panel = document.getElementById('editSessionDrawerPanel');
+      panel.classList.add('translate-x-full');
+      setTimeout(() => {
+        backdrop.classList.add('hidden');
+      }, 200);
+    }
+
+    function saveAndDispatch() {
+      closeEditDrawer();
+      showPortalToast('Session Updated', 'Record parameters saved.', 'success');
+    }
+
+    function deleteSession(button) {
+      const row = button.closest('.session-row');
+      if (confirm('Cancel and remove this academic session from portal records?')) {
+        row.remove();
+        showPortalToast('Session Removed', 'Entry removed from active register.', 'info');
+      }
+    }
+  </script>
+  <script src="/shared-portal.js"></script>
+</body>
+</html>
