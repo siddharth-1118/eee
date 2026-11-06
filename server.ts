@@ -158,20 +158,68 @@ apiRouter.post('/students', (req, res) => {
     return res.status(400).json({ error: 'Name and email are required' });
   }
 
+  const cleanEmail = email.trim().toLowerCase();
   const newStudent = {
     id: `STU-${Date.now().toString(36).toUpperCase()}`,
     name,
     regNo: regNo || `RA211100501${Math.floor(1000 + Math.random() * 9000)}`,
-    email,
+    email: cleanEmail,
     batch: batch || 'EEE-A',
     year: year || 'Final Year UG',
     capstoneGroup: capstoneGroup || 'General'
   };
 
   const students = readStudents();
-  students.push(newStudent);
+  // Check if exists
+  const existingIdx = students.findIndex((s: any) => s.email.toLowerCase() === cleanEmail);
+  if (existingIdx >= 0) {
+    students[existingIdx] = { ...students[existingIdx], ...newStudent };
+  } else {
+    students.push(newStudent);
+  }
   writeStudents(students);
   res.status(201).json({ success: true, student: newStudent });
+});
+
+apiRouter.post('/students/bulk', (req, res) => {
+  const { students: newStudentsList } = req.body;
+  if (!Array.isArray(newStudentsList) || newStudentsList.length === 0) {
+    return res.status(400).json({ error: 'Array of students is required' });
+  }
+
+  const existing = readStudents();
+  const added: any[] = [];
+
+  for (const s of newStudentsList) {
+    if (!s.email) continue;
+    const cleanEmail = s.email.trim().toLowerCase();
+    const existingIdx = existing.findIndex((item: any) => item.email.toLowerCase() === cleanEmail);
+
+    const studentObj = {
+      id: existingIdx >= 0 ? existing[existingIdx].id : `STU-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`,
+      name: s.name ? s.name.trim() : cleanEmail.split('@')[0],
+      regNo: s.regNo ? s.regNo.trim() : `RA211100501${Math.floor(1000 + Math.random() * 9000)}`,
+      email: cleanEmail,
+      batch: s.batch ? s.batch.trim() : 'EEE-A',
+      year: s.year ? s.year.trim() : 'Final Year UG',
+      capstoneGroup: s.capstoneGroup ? s.capstoneGroup.trim() : 'General'
+    };
+
+    if (existingIdx >= 0) {
+      existing[existingIdx] = studentObj;
+    } else {
+      existing.push(studentObj);
+    }
+    added.push(studentObj);
+  }
+
+  writeStudents(existing);
+  res.status(201).json({
+    success: true,
+    addedCount: added.length,
+    students: added,
+    totalCount: existing.length
+  });
 });
 
 apiRouter.get('/sessions', (req, res) => {

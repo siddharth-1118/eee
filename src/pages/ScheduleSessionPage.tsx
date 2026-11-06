@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Send, 
@@ -11,8 +11,12 @@ import {
   X, 
   Users,
   Plus,
-  ShieldCheck
+  ShieldCheck,
+  FileSpreadsheet,
+  UploadCloud,
+  Download
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { api } from '../services/api';
 import { Student } from '../types';
 import { useToast } from '../context/ToastContext';
@@ -32,6 +36,12 @@ export const ScheduleSessionPage: React.FC = () => {
   const [newStudentRegNo, setNewStudentRegNo] = useState('');
   const [newStudentBatch, setNewStudentBatch] = useState('EEE-A');
   const [newStudentGroup, setNewStudentGroup] = useState('Group 04');
+
+  // Excel / CSV Upload State
+  const [showUploadPanel, setShowUploadPanel] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form State (Blank by default - only filled when professor adds)
   const [title, setTitle] = useState('');
@@ -147,6 +157,120 @@ export const ScheduleSessionPage: React.FC = () => {
     }
   };
 
+  const handleDownloadSampleCsv = () => {
+    const csvContent = 
+`Name,Email,RegNo,Batch,CapstoneGroup
+Sai Siddharth Vooka,saisiddharthvooka@gmail.com,RA2111005010001,EEE-A,Group 04
+Arun Kumar,arunkumar.srmeee@gmail.com,RA2111005010012,EEE-A,Group 04
+Priya Venkatesh,priyavenkat.srmeee@gmail.com,RA2111005010018,EEE-A,Group 04
+Rahul Sharma,rahulsharma.srmeee@gmail.com,RA2111005010025,EEE-B,Group 09`;
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'srm_student_import_template.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Template Downloaded', 'Sample CSV template saved to your downloads', 'info');
+  };
+
+  const processFile = async (file: File) => {
+    setIsUploading(true);
+    showToast('Processing File', `Parsing student records from ${file.name}...`, 'info');
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const jsonRows: any[] = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+      if (!jsonRows || jsonRows.length === 0) {
+        showToast('Empty Sheet', 'No data rows found in the uploaded file', 'warning');
+        return;
+      }
+
+      const parsed: Partial<Student>[] = [];
+      for (const row of jsonRows) {
+        let email = '';
+        let name = '';
+        let regNo = '';
+        let batch = 'EEE-A';
+        let capstoneGroup = 'General';
+
+        for (const [key, val] of Object.entries(row)) {
+          const cleanKey = key.trim().toLowerCase();
+          const strVal = String(val).trim();
+
+          if (cleanKey.includes('email') || cleanKey.includes('mail')) {
+            email = strVal;
+          } else if (cleanKey.includes('name')) {
+            name = strVal;
+          } else if (cleanKey.includes('reg') || cleanKey.includes('roll') || cleanKey.includes('id') || cleanKey.includes('register')) {
+            regNo = strVal;
+          } else if (cleanKey.includes('batch') || cleanKey.includes('section') || cleanKey.includes('class')) {
+            batch = strVal;
+          } else if (cleanKey.includes('group') || cleanKey.includes('capstone')) {
+            capstoneGroup = strVal;
+          }
+        }
+
+        if (email && email.includes('@')) {
+          parsed.push({
+            name: name || email.split('@')[0],
+            email: email.toLowerCase(),
+            regNo: regNo || undefined,
+            batch: batch || 'EEE-A',
+            year: 'Final Year UG',
+            capstoneGroup: capstoneGroup || 'General'
+          });
+        }
+      }
+
+      if (parsed.length === 0) {
+        showToast('No Valid Emails', 'Could not detect any valid student email addresses in the file', 'error');
+        return;
+      }
+
+      const res = await api.addStudentsBulk(parsed);
+      if (res.success) {
+        // Refresh directory
+        const updated = await api.getStudents();
+        setStudents(updated);
+
+        // Auto-check all parsed students so they are queued for dispatch
+        setSelectedEmails((prev) => {
+          const next = new Set(prev);
+          parsed.forEach((s) => {
+            if (s.email) next.add(s.email);
+          });
+          return next;
+        });
+
+        setShowUploadPanel(false);
+        showToast(
+          'Import Successful',
+          `Imported ${parsed.length} student(s) from ${file.name}. All queued for email dispatch!`,
+          'success',
+          6000
+        );
+      }
+    } catch (err: any) {
+      showToast('Parsing Error', err.message || 'Failed to read spreadsheet file', 'error');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processFile(file);
+    }
+    e.target.value = '';
+  };
+
   const allRecipients = Array.from(new Set([...Array.from(selectedEmails), ...Array.from(customEmails)]));
 
   const handlePlatformChange = (pId: string) => {
@@ -188,7 +312,7 @@ export const ScheduleSessionPage: React.FC = () => {
       return;
     }
     if (allRecipients.length === 0) {
-      showToast('No Recipients', 'Please select or add at least one recipient email', 'warning');
+      showToast('No Recipients', 'Please select, upload, or add at least one recipient email', 'warning');
       return;
     }
 
@@ -408,7 +532,7 @@ export const ScheduleSessionPage: React.FC = () => {
 
             <div className="border border-stone-200 rounded-lg p-4 bg-[#faf9f6] space-y-4">
               
-              {/* Header with Quick Select & Register Student */}
+              {/* Header with Quick Select, Register Student & Upload CSV / Excel */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-200">
                 <div className="flex flex-wrap items-center gap-1.5 text-xs">
                   <span className="text-stone-500 mr-1 text-[11px]">Quick:</span>
@@ -430,10 +554,23 @@ export const ScheduleSessionPage: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowAddStudentForm(!showAddStudentForm)}
-                    className="px-2.5 py-1 bg-stone-900 hover:bg-stone-800 text-white rounded text-[11px] font-medium flex items-center gap-1 ml-1"
+                    onClick={() => {
+                      setShowAddStudentForm(!showAddStudentForm);
+                      if (showUploadPanel) setShowUploadPanel(false);
+                    }}
+                    className="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 rounded text-[11px] font-medium flex items-center gap-1 ml-1"
                   >
                     <Plus className="w-3 h-3" /> Register Student
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowUploadPanel(!showUploadPanel);
+                      if (showAddStudentForm) setShowAddStudentForm(false);
+                    }}
+                    className="px-2.5 py-1 bg-emerald-800 hover:bg-emerald-700 text-white rounded text-[11px] font-medium flex items-center gap-1.5 ml-1 shadow-sm"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5" /> Upload CSV / Excel
                   </button>
                 </div>
 
@@ -450,6 +587,74 @@ export const ScheduleSessionPage: React.FC = () => {
                   </div>
                 )}
               </div>
+
+              {/* Bulk CSV / Excel Upload Panel */}
+              {showUploadPanel && (
+                <div className="p-4 bg-white border border-stone-300 rounded-md space-y-3">
+                  <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+                    <div className="flex items-center gap-2">
+                      <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
+                      <span className="text-xs font-semibold text-stone-900">
+                        Upload Student Cohort Sheet (.csv, .xlsx, .xls)
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handleDownloadSampleCsv}
+                        className="text-[11px] text-stone-600 hover:text-stone-900 flex items-center gap-1 underline font-medium"
+                      >
+                        <Download className="w-3 h-3 text-stone-500" /> Download Sample CSV
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowUploadPanel(false)}
+                        className="text-stone-400 hover:text-stone-600"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Dropzone */}
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragActive(true);
+                    }}
+                    onDragLeave={() => setDragActive(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragActive(false);
+                      const droppedFile = e.dataTransfer.files?.[0];
+                      if (droppedFile) processFile(droppedFile);
+                    }}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+                      dragActive
+                        ? 'border-emerald-600 bg-emerald-50/50'
+                        : 'border-stone-300 hover:border-stone-400 bg-stone-50/50'
+                    }`}
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".csv, .xlsx, .xls"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto mb-2 text-emerald-700">
+                      <UploadCloud className="w-5 h-5" />
+                    </div>
+                    <div className="text-xs font-semibold text-stone-800">
+                      {isUploading ? 'Parsing and Importing Students...' : 'Click to Browse or Drag & Drop Excel / CSV'}
+                    </div>
+                    <p className="text-[11px] text-stone-500 mt-1 max-w-sm mx-auto">
+                      Supports <strong>.xlsx</strong>, <strong>.xls</strong>, or <strong>.csv</strong> files. Columns like <code>Name</code>, <code>Email</code>, <code>RegNo</code>, and <code>Batch</code> are automatically detected and queued for email dispatches.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Inline Student Registration Form */}
               {showAddStudentForm && (
@@ -533,8 +738,17 @@ export const ScheduleSessionPage: React.FC = () => {
                     <Users className="w-8 h-8 text-stone-300 mx-auto mb-2" />
                     <div className="text-xs font-semibold text-stone-700">No Students in Directory Yet</div>
                     <p className="text-[11px] text-stone-500 mt-1 max-w-sm mx-auto">
-                      Click <strong>"Register Student"</strong> above to add students to your permanent roster, or enter email addresses directly below.
+                      Click <strong>"Upload CSV / Excel"</strong> to import a batch of students, or <strong>"Register Student"</strong> to add candidates one by one.
                     </p>
+                    <div className="flex items-center justify-center gap-2 mt-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowUploadPanel(true)}
+                        className="px-3 py-1.5 bg-emerald-800 hover:bg-emerald-700 text-white rounded text-xs font-medium inline-flex items-center gap-1.5"
+                      >
+                        <FileSpreadsheet className="w-3.5 h-3.5" /> Upload Excel or CSV
+                      </button>
+                    </div>
                   </div>
                 ) : filteredStudents.length === 0 ? (
                   <div className="text-center py-4 text-xs text-stone-400">No students matched search criteria.</div>
@@ -643,7 +857,7 @@ export const ScheduleSessionPage: React.FC = () => {
                     return;
                   }
                   if (allRecipients.length === 0) {
-                    showToast('No Recipients', 'Select or queue at least one recipient email address', 'warning');
+                    showToast('No Recipients', 'Select, upload, or queue at least one recipient email address', 'warning');
                     return;
                   }
                   setModalOpen(true);

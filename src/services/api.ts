@@ -25,6 +25,20 @@ export const api = {
     return res.json();
   },
 
+  async addStudentsBulk(students: Partial<Student>[]): Promise<{
+    success: boolean;
+    addedCount: number;
+    students: Student[];
+    totalCount: number;
+  }> {
+    const res = await fetch('/api/students/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ students })
+    });
+    return res.json();
+  },
+
   async getSessions(): Promise<Session[]> {
     const res = await fetch('/api/sessions');
     return res.json();
