@@ -1,26 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Key, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Mail, Key, Eye, EyeOff, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('srmeeelibraray@gmail.com');
-  const [password, setPassword] = useState('ACAD-TOKEN-KRISH-2024');
+  const [password, setPassword] = useState('4321');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showToast } = useToast();
+  const { isAuthenticated, login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email.trim() || !password.trim()) {
+      showToast('Validation Error', 'Email and PIN / passkey are required', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
     showToast('Authenticating...', 'Verifying faculty credentials against SRM institutional registry', 'info');
 
-    setTimeout(() => {
+    try {
+      const success = await login(email, password);
+      if (success) {
+        showToast('Authentication Granted', 'Welcome Prof. Krishnavel (Senior Faculty Advisor)', 'success');
+        navigate('/dashboard', { replace: true });
+      } else {
+        showToast('Access Denied', 'Invalid credentials. Please enter PIN 4321 or faculty passkey.', 'error');
+      }
+    } catch (err: any) {
+      showToast('Authentication Error', err.message, 'error');
+    } finally {
       setIsSubmitting(false);
-      showToast('Authentication Granted', 'Welcome Prof. Krishnavel (Senior Faculty Advisor)', 'success');
-      navigate('/dashboard');
-    }, 600);
+    }
   };
 
   return (
@@ -59,6 +80,7 @@ export const LoginPage: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder="srmeeelibraray@gmail.com"
                 className="w-full bg-[#fbfaf8] text-[#1c1917] text-sm pl-9 pr-3 py-2 rounded border border-[#e6e2da] focus:outline-none focus:border-[#1c1917] focus:bg-white transition-colors"
               />
             </div>
@@ -67,15 +89,9 @@ export const LoginPage: React.FC = () => {
           <div>
             <div className="flex justify-between items-baseline mb-1">
               <label className="text-xs font-medium text-[#57534e]" htmlFor="faculty-passkey">
-                Faculty Passkey / Token
+                Faculty PIN / Passkey
               </label>
-              <button
-                type="button"
-                onClick={() => showToast('Token Verification', 'Hardware authentication prompt dispatched', 'info')}
-                className="text-xs text-[#1e3a8a] hover:underline"
-              >
-                Reset
-              </button>
+              <span className="text-[10px] text-stone-500 font-mono">PIN: 4321</span>
             </div>
             <div className="relative flex items-center">
               <Key className="w-4 h-4 text-[#78716c] absolute left-3 pointer-events-none" />
@@ -85,7 +101,8 @@ export const LoginPage: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white text-[#1c1917] text-sm pl-9 pr-9 py-2 rounded border border-[#e6e2da] focus:outline-none focus:border-[#1c1917] transition-colors"
+                placeholder="Enter PIN (e.g. 4321)"
+                className="w-full bg-white text-[#1c1917] text-sm pl-9 pr-9 py-2 rounded border border-[#e6e2da] focus:outline-none focus:border-[#1c1917] transition-colors font-mono"
               />
               <button
                 type="button"
@@ -109,8 +126,9 @@ export const LoginPage: React.FC = () => {
           </div>
         </form>
 
-        <div className="mt-6 pt-4 border-t border-stone-100 text-center text-[11px] text-stone-500">
-          Faculty Principal: Prof. of Practice Engr. Krishnavel
+        <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-center gap-1.5 text-[11px] text-stone-500 text-center">
+          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+          <span>Faculty Principal: Prof. of Practice Engr. Krishnavel</span>
         </div>
       </main>
     </div>

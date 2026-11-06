@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { Bell, LogOut, CheckCircle2, Calendar, FileText } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export const Header: React.FC = () => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -159,13 +160,17 @@ export const Header: React.FC = () => {
               className="w-8 h-8 rounded-full object-cover border border-stone-200"
               src="/professor_krishnavel.jpg"
             />
-            <Link
-              to="/login"
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
               className="p-1.5 text-stone-500 hover:text-stone-900 rounded transition-colors"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
-            </Link>
+            </button>
           </div>
 
         </div>
