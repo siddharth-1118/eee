@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=esm --outfile=api/index.js --external:express --external:nodemailer --external:cors",
     "start": "tsx server.ts",
     "preview": "vite preview"
   },
@@ -32,6 +32,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.2.1",
     "autoprefixer": "^10.6.2",
+    "esbuild": "^0.28.2",
     "postcss": "^8.5.32",
     "tailwindcss": "^4.3.4",
     "tsx": "^4.23.15",
