@@ -70,8 +70,3 @@ export interface SmtpStatus {
   message?: string;
   error?: string;
 }
-
-export interface SupabaseStatus {
-  configured: boolean;
-  endpoint: string;
-}

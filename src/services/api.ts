@@ -1,4 +1,4 @@
-import { Student, Session, PortalStats, SmtpStatus, SupabaseStatus } from '../types';
+import { Student, Session, PortalStats, SmtpStatus } from '../types';
 
 export const api = {
   async getHealth() {
@@ -75,20 +75,6 @@ export const api = {
 
   async getSmtpStatus(): Promise<SmtpStatus> {
     const res = await fetch('/api/smtp/status');
-    return res.json();
-  },
-
-  async getSupabaseStatus(): Promise<SupabaseStatus> {
-    const res = await fetch('/api/supabase/status');
-    return res.json();
-  },
-
-  async updateSupabaseConfig(config: { supabaseUrl: string; supabaseKey: string }) {
-    const res = await fetch('/api/supabase/config', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config)
-    });
     return res.json();
   }
 };

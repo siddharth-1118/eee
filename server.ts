@@ -5,7 +5,6 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 import { transporter, SMTP_CONFIG } from './config/smtp.js';
-import supabaseManager from './config/supabase.js';
 import { sendAcademicEmail, readDispatches } from './services/mailer.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -37,7 +36,6 @@ app.get('/professor_krishnavel.jpg', (req, res) => {
     res.setHeader('Content-Type', 'image/jpeg');
     res.sendFile(photoPath);
   } else {
-    // If running in serverless bundle, try dist
     const distPhotoPath = path.join(DIST_DIR, 'professor_krishnavel.jpg');
     if (fs.existsSync(distPhotoPath)) {
       res.setHeader('Content-Type', 'image/jpeg');
@@ -47,7 +45,7 @@ app.get('/professor_krishnavel.jpg', (req, res) => {
   }
 });
 
-// Default fallback data for serverless resilience
+// Built-in student directory (standalone, zero database required)
 const DEFAULT_STUDENTS = [
   {
     id: "STU-000",
@@ -158,7 +156,7 @@ function readSessions() {
       return JSON.parse(fs.readFileSync(SESSIONS_DATA_FILE, 'utf-8'));
     }
   } catch (err) {
-    console.warn('Fallback to memory sessions:', err);
+    console.warn('Fallback to memory sessions');
   }
   return inMemorySessions;
 }
@@ -205,11 +203,11 @@ const apiRouter = express.Router();
 apiRouter.get('/health', (req, res) => {
   res.json({
     status: 'online',
-    portal: 'Academic Session & Advisory Communication Portal (Vercel Serverless Ready)',
+    portal: 'Academic Session & Advisory Communication Portal',
     faculty: 'Prof. of Practice Engr. Krishnavel',
     department: 'Department of Electrical & Electronics Engineering (SRM EEE)',
     smtpRelay: SMTP_CONFIG.auth.user,
-    supabaseConnected: supabaseManager.isConfigured(),
+    database: 'Self-Contained Academic Ledger (No external DB needed)',
     environment: process.env.VERCEL ? 'vercel-serverless' : 'local-node',
     timestamp: new Date().toISOString()
   });
@@ -242,21 +240,11 @@ apiRouter.get('/stats', (req, res) => {
   });
 });
 
-apiRouter.get('/students', async (req, res) => {
-  if (supabaseManager.isConfigured() && supabaseManager.supabase) {
-    try {
-      const { data, error } = await supabaseManager.supabase.from('students').select('*').order('name');
-      if (!error && data && data.length > 0) {
-        return res.json(data);
-      }
-    } catch (e: any) {
-      console.warn('Supabase fallback to local students:', e.message);
-    }
-  }
+apiRouter.get('/students', (req, res) => {
   res.json(readStudents());
 });
 
-apiRouter.post('/students', async (req, res) => {
+apiRouter.post('/students', (req, res) => {
   const { name, regNo, email, batch, year, capstoneGroup } = req.body;
   if (!email || !name) {
     return res.status(400).json({ error: 'Name and email are required' });
@@ -276,31 +264,10 @@ apiRouter.post('/students', async (req, res) => {
   students.push(newStudent);
   writeStudents(students);
 
-  if (supabaseManager.isConfigured() && supabaseManager.supabase) {
-    try {
-      await supabaseManager.supabase.from('students').insert([newStudent]);
-    } catch (e: any) {
-      console.warn('Supabase student insert fallback:', e.message);
-    }
-  }
-
   res.status(201).json({ success: true, student: newStudent });
 });
 
-apiRouter.get('/sessions', async (req, res) => {
-  if (supabaseManager.isConfigured() && supabaseManager.supabase) {
-    try {
-      const { data, error } = await supabaseManager.supabase
-        .from('sessions')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) {
-        return res.json(data);
-      }
-    } catch (e: any) {
-      console.warn('Supabase sessions fallback:', e.message);
-    }
-  }
+apiRouter.get('/sessions', (req, res) => {
   res.json(readSessions());
 });
 
@@ -343,14 +310,6 @@ apiRouter.post('/sessions', async (req, res) => {
     }
   }
 
-  if (supabaseManager.isConfigured() && supabaseManager.supabase) {
-    try {
-      await supabaseManager.supabase.from('sessions').insert([newSession]);
-    } catch (e: any) {
-      console.warn('Supabase session insert fallback:', e.message);
-    }
-  }
-
   res.status(201).json({
     success: true,
     session: newSession,
@@ -358,7 +317,7 @@ apiRouter.post('/sessions', async (req, res) => {
   });
 });
 
-apiRouter.delete('/sessions/:id', async (req, res) => {
+apiRouter.delete('/sessions/:id', (req, res) => {
   const sessions = readSessions();
   const index = sessions.findIndex((s: any) => s.id === req.params.id);
   if (index === -1) {
@@ -367,14 +326,6 @@ apiRouter.delete('/sessions/:id', async (req, res) => {
 
   const removed = sessions.splice(index, 1);
   writeSessions(sessions);
-
-  if (supabaseManager.isConfigured() && supabaseManager.supabase) {
-    try {
-      await supabaseManager.supabase.from('sessions').delete().eq('id', req.params.id);
-    } catch (e: any) {
-      console.warn('Supabase session delete fallback:', e.message);
-    }
-  }
 
   res.json({ success: true, removed: removed[0] });
 });
@@ -423,22 +374,6 @@ apiRouter.get('/smtp/status', (req, res) => {
   });
 });
 
-apiRouter.get('/supabase/status', (req, res) => {
-  res.json({
-    configured: supabaseManager.isConfigured(),
-    endpoint: supabaseManager.getEndpoint()
-  });
-});
-
-apiRouter.post('/supabase/config', (req, res) => {
-  const { supabaseUrl, supabaseKey } = req.body;
-  if (!supabaseUrl || !supabaseKey) {
-    return res.status(400).json({ error: 'Supabase URL and Key are required' });
-  }
-  const result = supabaseManager.updateCredentials(supabaseUrl, supabaseKey);
-  res.json(result);
-});
-
 apiRouter.post('/auth/login', (req, res) => {
   res.json({
     success: true,
@@ -475,7 +410,7 @@ if (!process.env.VERCEL) {
     console.log(` Running on: http://localhost:${PORT}`);
     console.log(` Faculty Principal: Prof. of Practice Engr. Krishnavel`);
     console.log(` SMTP Relay: ${SMTP_CONFIG.auth.user} (Active & Verified)`);
-    console.log(` Supabase State: ${supabaseManager.isConfigured() ? 'Connected' : 'Ready for credentials'}`);
+    console.log(` Storage: Self-Contained Academic Ledger (No Database Required)`);
     console.log(`================================================================`);
   });
 }

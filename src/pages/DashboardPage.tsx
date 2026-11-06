@@ -310,8 +310,8 @@ export const DashboardPage: React.FC = () => {
                 <span className="font-mono text-stone-900">RFC-5545 (.ics)</span>
               </div>
               <div className="py-1.5 flex justify-between">
-                <span>Database State:</span>
-                <span className="font-mono text-emerald-700">Local JSON + Supabase Ready</span>
+                <span>Storage Ledger:</span>
+                <span className="font-mono text-emerald-700">Self-Contained Academic Store</span>
               </div>
             </div>
           </div>

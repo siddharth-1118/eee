@@ -3,7 +3,7 @@
 > **Official Department Portal for Academic Advisory, Seminar Scheduling & Verified Student Email Dispatches**  
 > **Faculty Principal:** Prof. of Practice Engr. Krishnavel, Senior Faculty Advisor  
 > **Department:** Department of Electrical & Electronics Engineering (SRM EEE), SRM Institute of Science & Technology  
-> **Stack:** React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Express, Nodemailer, Supabase
+> **Stack:** React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Express, Nodemailer
 
 ---
 
@@ -12,6 +12,8 @@
 The **Academic Session & Advisory Communication Portal** is a full-stack **TypeScript and React.js** web application enabling faculty to schedule technical seminars, capstone advisory sessions, and departmental convocations with direct email dispatches to enrolled students and faculty members.
 
 It features an unslopped, academic craft UI, real-time student selection roster, automated RFC-5545 `.ics` calendar invitation generation, and a verified Google SMTP mail relay (`srmeeelibraray@gmail.com`).
+
+**100% Self-Contained:** No external database setup (such as Supabase) is required. The portal runs with a built-in student directory, native ledger storage, and direct Google SMTP relay.
 
 ---
 
@@ -22,7 +24,7 @@ It features an unslopped, academic craft UI, real-time student selection roster,
 - **Interactive Student Selection Roster:** Filter students by year, batch, or capstone group (e.g. Group 04, 09, 12), select individual students with checkboxes, or add custom external recipient email addresses.
 - **Authenticated SMTP Relay:** Dispatches live HTML emails with attached iCalendar (`.ics`) invites and embedded faculty portrait signatures via authenticated Google SMTP relay (`srmeeelibraray@gmail.com`).
 - **Telemetry & Logging:** Real-time delivery tracking, bounce logging, and audit records in `data/dispatches.json`.
-- **Supabase Ready:** Includes `@supabase/supabase-js` configuration and a ready-to-execute schema in `supabase_schema.sql` for quick database sync.
+- **Zero-Database Self-Contained Architecture:** Works immediately out-of-the-box with built-in student directory and serverless/local persistence without needing Supabase or any third-party database.
 
 ---
 
@@ -67,13 +69,11 @@ The portal will be active at:
 This repository is pre-configured for zero-friction Vercel deployment:
 - **`vercel.json`**: Configures Vite build output and API rewrite rules.
 - **`api/index.ts`**: Runs the backend Express relay as a serverless function.
-- **Environment Variables (Optional / Configured in Vercel Dashboard)**:
+- **Environment Variables (Already defaulted in codebase / Configurable in Vercel Dashboard)**:
   - `SMTP_USER` = `srmeeelibraray@gmail.com`
   - `SMTP_PASS` = `jzpvoyjarrtrpbeb`
   - `SMTP_HOST` = `smtp.gmail.com`
   - `SMTP_PORT` = `465`
-  - `SUPABASE_URL` = (your Supabase URL)
-  - `SUPABASE_KEY` = (your Supabase Anon Key)
 
 ### Steps to Deploy:
 1. Go to [vercel.com](https://vercel.com) and click **"Add New Project"**.
@@ -85,27 +85,13 @@ This repository is pre-configured for zero-friction Vercel deployment:
 
 ---
 
-## Supabase Database Integration
-
-When setting up your Supabase project:
-1. Open the [Supabase Dashboard](https://supabase.com).
-2. Navigate to **SQL Editor** &rarr; **New Query**.
-3. Paste and run the SQL instructions from `supabase_schema.sql`.
-4. Provide the project URL and API key via environment variables:
-   ```env
-   SUPABASE_URL=https://your-project.supabase.co
-   SUPABASE_KEY=your-anon-key
-   ```
-   *Note: If Supabase is not connected yet, the system smoothly falls back to local JSON storage in `data/`.*
-
----
-
 ## Architecture & Directory Structure
 
 ```
+├── api/
+│   └── index.ts                # Vercel serverless function entrypoint
 ├── config/
-│   ├── smtp.ts                 # Nodemailer transporter & relay credentials
-│   └── supabase.ts             # Supabase client wrapper & fallback logic
+│   └── smtp.ts                 # Nodemailer transporter & relay credentials
 ├── data/
 │   ├── students.json           # SRM EEE enrolled student directory
 │   ├── sessions.json           # Scheduled academic sessions & drafts
@@ -134,10 +120,10 @@ When setting up your Supabase project:
 │   ├── main.tsx                # React application entry point
 │   └── index.css               # Tailwind CSS & craft styling
 ├── server.ts                   # Express server & API endpoints (TypeScript)
+├── vercel.json                 # Vercel deployment & routing configuration
 ├── vite.config.ts              # Vite configuration & proxy settings
 ├── tsconfig.json               # TypeScript compiler options
 ├── tailwind.config.js          # Tailwind theme configuration
-├── supabase_schema.sql         # Production database schema script
 ├── package.json
 └── README.md
 ```
