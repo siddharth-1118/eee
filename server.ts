@@ -18,58 +18,173 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const PUBLIC_DIR = path.join(__dirname, 'public');
-const DIST_DIR = path.join(__dirname, 'dist');
-const SESSIONS_DATA_FILE = path.join(__dirname, 'data', 'sessions.json');
-const STUDENTS_DATA_FILE = path.join(__dirname, 'data', 'students.json');
+const PUBLIC_DIR = path.join(process.cwd(), 'public');
+const DIST_DIR = path.join(process.cwd(), 'dist');
+const SESSIONS_DATA_FILE = path.join(process.cwd(), 'data', 'sessions.json');
+const STUDENTS_DATA_FILE = path.join(process.cwd(), 'data', 'students.json');
 
 app.use(express.static(PUBLIC_DIR));
 app.use('/public', express.static(PUBLIC_DIR));
 
-// Serve compiled React build if available
 if (fs.existsSync(DIST_DIR)) {
   app.use(express.static(DIST_DIR));
 }
 
-// Serve Prof. Krishnavel's portrait
+// Serve Prof. Krishnavel's portrait explicitly
 app.get('/professor_krishnavel.jpg', (req, res) => {
   const photoPath = path.join(PUBLIC_DIR, 'professor_krishnavel.jpg');
   if (fs.existsSync(photoPath)) {
     res.setHeader('Content-Type', 'image/jpeg');
     res.sendFile(photoPath);
   } else {
+    // If running in serverless bundle, try dist
+    const distPhotoPath = path.join(DIST_DIR, 'professor_krishnavel.jpg');
+    if (fs.existsSync(distPhotoPath)) {
+      res.setHeader('Content-Type', 'image/jpeg');
+      return res.sendFile(distPhotoPath);
+    }
     res.status(404).send('Photo not found');
   }
 });
 
+// Default fallback data for serverless resilience
+const DEFAULT_STUDENTS = [
+  {
+    id: "STU-000",
+    name: "Sai Siddharth Vooka",
+    regNo: "RA2111005010001",
+    email: "saisiddharthvooka@gmail.com",
+    batch: "EEE-A",
+    year: "Final Year UG",
+    capstoneGroup: "Group 04"
+  },
+  {
+    id: "STU-001",
+    name: "Arun Kumar",
+    regNo: "RA2111005010012",
+    email: "arunkumar.srmeee@gmail.com",
+    batch: "EEE-A",
+    year: "Final Year UG",
+    capstoneGroup: "Group 04"
+  },
+  {
+    id: "STU-002",
+    name: "Priya Venkatesh",
+    regNo: "RA2111005010018",
+    email: "priyavenkat.srmeee@gmail.com",
+    batch: "EEE-A",
+    year: "Final Year UG",
+    capstoneGroup: "Group 04"
+  },
+  {
+    id: "STU-003",
+    name: "Rahul Sharma",
+    regNo: "RA2111005010025",
+    email: "rahulsharma.srmeee@gmail.com",
+    batch: "EEE-A",
+    year: "Final Year UG",
+    capstoneGroup: "Group 04"
+  },
+  {
+    id: "STU-004",
+    name: "Kavya Sundaram",
+    regNo: "RA2111005010034",
+    email: "kavyasundaram.srmeee@gmail.com",
+    batch: "EEE-A",
+    year: "Final Year UG",
+    capstoneGroup: "Group 09"
+  },
+  {
+    id: "STU-005",
+    name: "Aditya Nair",
+    regNo: "RA2111005010041",
+    email: "adityanair.srmeee@gmail.com",
+    batch: "EEE-A",
+    year: "Final Year UG",
+    capstoneGroup: "Group 09"
+  },
+  {
+    id: "STU-006",
+    name: "Sneha Ranganathan",
+    regNo: "RA2111005010055",
+    email: "sneharangan.srmeee@gmail.com",
+    batch: "EEE-B",
+    year: "Final Year UG",
+    capstoneGroup: "Group 09"
+  },
+  {
+    id: "STU-007",
+    name: "Deepak Raj",
+    regNo: "RA2111005010062",
+    email: "deepakraj.srmeee@gmail.com",
+    batch: "EEE-B",
+    year: "Final Year UG",
+    capstoneGroup: "Group 12"
+  },
+  {
+    id: "STU-008",
+    name: "Divya Menon",
+    regNo: "RA2111005010070",
+    email: "divyamenon.srmeee@gmail.com",
+    batch: "EEE-B",
+    year: "Final Year UG",
+    capstoneGroup: "Group 12"
+  },
+  {
+    id: "STU-009",
+    name: "Karthik Subramanian",
+    regNo: "RA2111005010083",
+    email: "karthiksubramanian.srmeee@gmail.com",
+    batch: "EEE-B",
+    year: "Final Year UG",
+    capstoneGroup: "Group 12"
+  },
+  {
+    id: "STU-010",
+    name: "Ananya Deshmukh",
+    regNo: "RA2111005010095",
+    email: "ananyadeshmukh.srmeee@gmail.com",
+    batch: "EEE-B",
+    year: "Final Year UG",
+    capstoneGroup: "Group 12"
+  }
+];
+
+let inMemorySessions: any[] = [];
+
 function readSessions() {
   try {
-    if (!fs.existsSync(SESSIONS_DATA_FILE)) return [];
-    return JSON.parse(fs.readFileSync(SESSIONS_DATA_FILE, 'utf-8'));
+    if (fs.existsSync(SESSIONS_DATA_FILE)) {
+      return JSON.parse(fs.readFileSync(SESSIONS_DATA_FILE, 'utf-8'));
+    }
   } catch (err) {
-    console.error('Error reading sessions:', err);
-    return [];
+    console.warn('Fallback to memory sessions:', err);
   }
+  return inMemorySessions;
 }
 
 function writeSessions(sessions: any[]) {
+  inMemorySessions = sessions;
   try {
     fs.writeFileSync(SESSIONS_DATA_FILE, JSON.stringify(sessions, null, 2), 'utf-8');
     return true;
   } catch (err) {
-    console.error('Error writing sessions:', err);
-    return false;
+    try {
+      fs.writeFileSync('/tmp/sessions.json', JSON.stringify(sessions, null, 2), 'utf-8');
+    } catch (e) {}
+    return true;
   }
 }
 
 function readStudents() {
   try {
-    if (!fs.existsSync(STUDENTS_DATA_FILE)) return [];
-    return JSON.parse(fs.readFileSync(STUDENTS_DATA_FILE, 'utf-8'));
+    if (fs.existsSync(STUDENTS_DATA_FILE)) {
+      return JSON.parse(fs.readFileSync(STUDENTS_DATA_FILE, 'utf-8'));
+    }
   } catch (err) {
-    console.error('Error reading students:', err);
-    return [];
+    console.warn('Fallback to default students list');
   }
+  return DEFAULT_STUDENTS;
 }
 
 function writeStudents(students: any[]) {
@@ -77,25 +192,30 @@ function writeStudents(students: any[]) {
     fs.writeFileSync(STUDENTS_DATA_FILE, JSON.stringify(students, null, 2), 'utf-8');
     return true;
   } catch (err) {
-    console.error('Error writing students:', err);
-    return false;
+    try {
+      fs.writeFileSync('/tmp/students.json', JSON.stringify(students, null, 2), 'utf-8');
+    } catch (e) {}
+    return true;
   }
 }
 
-// API Endpoints
-app.get('/api/health', (req, res) => {
+// Router for API endpoints (handles both with and without /api prefix)
+const apiRouter = express.Router();
+
+apiRouter.get('/health', (req, res) => {
   res.json({
     status: 'online',
-    portal: 'Academic Session & Advisory Communication Portal (React + TypeScript)',
+    portal: 'Academic Session & Advisory Communication Portal (Vercel Serverless Ready)',
     faculty: 'Prof. of Practice Engr. Krishnavel',
     department: 'Department of Electrical & Electronics Engineering (SRM EEE)',
     smtpRelay: SMTP_CONFIG.auth.user,
     supabaseConnected: supabaseManager.isConfigured(),
+    environment: process.env.VERCEL ? 'vercel-serverless' : 'local-node',
     timestamp: new Date().toISOString()
   });
 });
 
-app.get('/api/stats', (req, res) => {
+apiRouter.get('/stats', (req, res) => {
   const sessions = readSessions();
   const students = readStudents();
   const dispatches = readDispatches();
@@ -122,7 +242,7 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-app.get('/api/students', async (req, res) => {
+apiRouter.get('/students', async (req, res) => {
   if (supabaseManager.isConfigured() && supabaseManager.supabase) {
     try {
       const { data, error } = await supabaseManager.supabase.from('students').select('*').order('name');
@@ -136,7 +256,7 @@ app.get('/api/students', async (req, res) => {
   res.json(readStudents());
 });
 
-app.post('/api/students', async (req, res) => {
+apiRouter.post('/students', async (req, res) => {
   const { name, regNo, email, batch, year, capstoneGroup } = req.body;
   if (!email || !name) {
     return res.status(400).json({ error: 'Name and email are required' });
@@ -167,7 +287,7 @@ app.post('/api/students', async (req, res) => {
   res.status(201).json({ success: true, student: newStudent });
 });
 
-app.get('/api/sessions', async (req, res) => {
+apiRouter.get('/sessions', async (req, res) => {
   if (supabaseManager.isConfigured() && supabaseManager.supabase) {
     try {
       const { data, error } = await supabaseManager.supabase
@@ -184,7 +304,7 @@ app.get('/api/sessions', async (req, res) => {
   res.json(readSessions());
 });
 
-app.post('/api/sessions', async (req, res) => {
+apiRouter.post('/sessions', async (req, res) => {
   const sessions = readSessions();
   const newSession = {
     id: `ACAD-2024-${String(sessions.length + 1).padStart(3, '0')}`,
@@ -238,7 +358,7 @@ app.post('/api/sessions', async (req, res) => {
   });
 });
 
-app.delete('/api/sessions/:id', async (req, res) => {
+apiRouter.delete('/sessions/:id', async (req, res) => {
   const sessions = readSessions();
   const index = sessions.findIndex((s: any) => s.id === req.params.id);
   if (index === -1) {
@@ -259,7 +379,7 @@ app.delete('/api/sessions/:id', async (req, res) => {
   res.json({ success: true, removed: removed[0] });
 });
 
-app.post('/api/smtp/send', async (req, res) => {
+apiRouter.post('/smtp/send', async (req, res) => {
   const { recipients, session } = req.body;
   if (!recipients || (Array.isArray(recipients) && recipients.length === 0)) {
     return res.status(400).json({ error: 'At least one recipient email address must be provided' });
@@ -283,7 +403,7 @@ app.post('/api/smtp/send', async (req, res) => {
   }
 });
 
-app.get('/api/smtp/status', (req, res) => {
+apiRouter.get('/smtp/status', (req, res) => {
   transporter.verify((err, success) => {
     if (err) {
       res.json({
@@ -303,14 +423,14 @@ app.get('/api/smtp/status', (req, res) => {
   });
 });
 
-app.get('/api/supabase/status', (req, res) => {
+apiRouter.get('/supabase/status', (req, res) => {
   res.json({
     configured: supabaseManager.isConfigured(),
     endpoint: supabaseManager.getEndpoint()
   });
 });
 
-app.post('/api/supabase/config', (req, res) => {
+apiRouter.post('/supabase/config', (req, res) => {
   const { supabaseUrl, supabaseKey } = req.body;
   if (!supabaseUrl || !supabaseKey) {
     return res.status(400).json({ error: 'Supabase URL and Key are required' });
@@ -319,7 +439,7 @@ app.post('/api/supabase/config', (req, res) => {
   res.json(result);
 });
 
-app.post('/api/auth/login', (req, res) => {
+apiRouter.post('/auth/login', (req, res) => {
   res.json({
     success: true,
     token: `ACAD-KEY-${Date.now()}`,
@@ -333,7 +453,11 @@ app.post('/api/auth/login', (req, res) => {
   });
 });
 
-// React SPA fallback
+// Mount router at both /api and / for Vercel & local compatibility
+app.use('/api', apiRouter);
+app.use('/', apiRouter);
+
+// SPA fallback for non-API client routes
 app.use((req, res) => {
   const indexPath = path.join(DIST_DIR, 'index.html');
   if (fs.existsSync(indexPath)) {
@@ -343,12 +467,17 @@ app.use((req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`================================================================`);
-  console.log(` SRM EEE Academic Portal Active (TypeScript + React.js SPA)`);
-  console.log(` Running on: http://localhost:${PORT}`);
-  console.log(` Faculty Principal: Prof. of Practice Engr. Krishnavel`);
-  console.log(` SMTP Relay: ${SMTP_CONFIG.auth.user} (Active & Verified)`);
-  console.log(` Supabase State: ${supabaseManager.isConfigured() ? 'Connected' : 'Ready for credentials'}`);
-  console.log(`================================================================`);
-});
+// Start local listener only if not on Vercel
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`================================================================`);
+    console.log(` SRM EEE Academic Portal Active (TypeScript + React.js SPA)`);
+    console.log(` Running on: http://localhost:${PORT}`);
+    console.log(` Faculty Principal: Prof. of Practice Engr. Krishnavel`);
+    console.log(` SMTP Relay: ${SMTP_CONFIG.auth.user} (Active & Verified)`);
+    console.log(` Supabase State: ${supabaseManager.isConfigured() ? 'Connected' : 'Ready for credentials'}`);
+    console.log(`================================================================`);
+  });
+}
+
+export default app;

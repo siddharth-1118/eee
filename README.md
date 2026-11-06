@@ -62,6 +62,29 @@ The portal will be active at:
 
 ---
 
+## Hosting on Vercel
+
+This repository is pre-configured for zero-friction Vercel deployment:
+- **`vercel.json`**: Configures Vite build output and API rewrite rules.
+- **`api/index.ts`**: Runs the backend Express relay as a serverless function.
+- **Environment Variables (Optional / Configured in Vercel Dashboard)**:
+  - `SMTP_USER` = `srmeeelibraray@gmail.com`
+  - `SMTP_PASS` = `jzpvoyjarrtrpbeb`
+  - `SMTP_HOST` = `smtp.gmail.com`
+  - `SMTP_PORT` = `465`
+  - `SUPABASE_URL` = (your Supabase URL)
+  - `SUPABASE_KEY` = (your Supabase Anon Key)
+
+### Steps to Deploy:
+1. Go to [vercel.com](https://vercel.com) and click **"Add New Project"**.
+2. Select your repository: **`siddharth-1118/eee`**.
+3. Framework Preset: **Vite** (automatically detected).
+4. Build Command: `npm run build` (default).
+5. Output Directory: `dist` (default).
+6. Click **Deploy**!
+
+---
+
 ## Supabase Database Integration
 
 When setting up your Supabase project:
