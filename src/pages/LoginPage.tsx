@@ -5,8 +5,9 @@ import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 
 export const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('srmeeelibraray@gmail.com');
-  const [password, setPassword] = useState('4321');
+  // Empty inputs by default — professor must fill in credentials
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showToast } = useToast();
@@ -22,7 +23,7 @@ export const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
-      showToast('Validation Error', 'Email and PIN / passkey are required', 'error');
+      showToast('Validation Error', 'Please enter your faculty email and passkey / PIN', 'error');
       return;
     }
 
@@ -35,7 +36,7 @@ export const LoginPage: React.FC = () => {
         showToast('Authentication Granted', 'Welcome Prof. Krishnavel (Senior Faculty Advisor)', 'success');
         navigate('/dashboard', { replace: true });
       } else {
-        showToast('Access Denied', 'Invalid credentials. Please enter PIN 4321 or faculty passkey.', 'error');
+        showToast('Access Denied', 'Invalid faculty credentials. Please check your email and passkey / PIN.', 'error');
       }
     } catch (err: any) {
       showToast('Authentication Error', err.message, 'error');
@@ -80,19 +81,16 @@ export const LoginPage: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="srmeeelibraray@gmail.com"
-                className="w-full bg-[#fbfaf8] text-[#1c1917] text-sm pl-9 pr-3 py-2 rounded border border-[#e6e2da] focus:outline-none focus:border-[#1c1917] focus:bg-white transition-colors"
+                placeholder="Enter faculty email (e.g. srmeeelibraray@gmail.com)"
+                className="w-full bg-[#fbfaf8] text-[#1c1917] text-sm pl-9 pr-3 py-2 rounded border border-[#e6e2da] focus:outline-none focus:border-[#1c1917] focus:bg-white transition-colors placeholder:text-stone-400"
               />
             </div>
           </div>
 
           <div>
-            <div className="flex justify-between items-baseline mb-1">
-              <label className="text-xs font-medium text-[#57534e]" htmlFor="faculty-passkey">
-                Faculty PIN / Passkey
-              </label>
-              <span className="text-[10px] text-stone-500 font-mono">PIN: 4321</span>
-            </div>
+            <label className="block text-xs font-medium text-[#57534e] mb-1" htmlFor="faculty-passkey">
+              Faculty PIN / Passkey
+            </label>
             <div className="relative flex items-center">
               <Key className="w-4 h-4 text-[#78716c] absolute left-3 pointer-events-none" />
               <input
@@ -101,8 +99,8 @@ export const LoginPage: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter PIN (e.g. 4321)"
-                className="w-full bg-white text-[#1c1917] text-sm pl-9 pr-9 py-2 rounded border border-[#e6e2da] focus:outline-none focus:border-[#1c1917] transition-colors font-mono"
+                placeholder="Enter PIN or Passkey"
+                className="w-full bg-white text-[#1c1917] text-sm pl-9 pr-9 py-2 rounded border border-[#e6e2da] focus:outline-none focus:border-[#1c1917] transition-colors font-mono placeholder:text-stone-400"
               />
               <button
                 type="button"

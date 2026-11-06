@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const stored = localStorage.getItem('srm_faculty_auth');
       if (stored) {
         const parsed = JSON.parse(stored);
-        return parsed.user || 'srmeeelibraray@gmail.com';
+        return parsed.user || null;
       }
     } catch (e) {
       // Ignore parsing errors
