@@ -51,6 +51,12 @@ export const ScheduleSessionPage: React.FC = () => {
   const [platform, setPlatform] = useState('meet');
   const [notes, setNotes] = useState('');
 
+  // Restrict past dates & times
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const currentTimeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const minTime = date === todayStr ? currentTimeStr : undefined;
+
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
   const [sendRealEmail, setSendRealEmail] = useState(true);
@@ -311,6 +317,14 @@ Rahul Sharma,rahulsharma.srmeee@gmail.com,RA2111005010025,EEE-B,Group 09`;
       showToast('Title Required', 'Please enter a session title', 'warning');
       return;
     }
+    if (date && date < todayStr) {
+      showToast('Invalid Date', 'Session date cannot be in the past', 'warning');
+      return;
+    }
+    if (date === todayStr && time && time < currentTimeStr) {
+      showToast('Invalid Time', 'Session time cannot be in the past for today', 'warning');
+      return;
+    }
     if (allRecipients.length === 0) {
       showToast('No Recipients', 'Please select, upload, or add at least one recipient email', 'warning');
       return;
@@ -416,11 +430,19 @@ Rahul Sharma,rahulsharma.srmeee@gmail.com,RA2111005010025,EEE-B,Group 09`;
                   <div className="relative">
                     <input
                       id="sessionDate"
-                      type="text"
-                      placeholder="e.g., Thursday, Nov 14, 2024"
+                      type="date"
+                      min={todayStr}
                       value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="w-full h-9 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400 placeholder:text-stone-400"
+                      onClick={(e) => e.currentTarget.showPicker?.()}
+                      onChange={(e) => {
+                        const newDate = e.target.value;
+                        setDate(newDate);
+                        if (newDate === todayStr && time && time < currentTimeStr) {
+                          setTime('');
+                          showToast('Time Reset', 'Please select a future time slot for today', 'info');
+                        }
+                      }}
+                      className="w-full h-9 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400"
                     />
                     <Calendar className="w-4 h-4 text-stone-400 absolute left-2.5 top-2.5 pointer-events-none" />
                   </div>
@@ -433,11 +455,19 @@ Rahul Sharma,rahulsharma.srmeee@gmail.com,RA2111005010025,EEE-B,Group 09`;
                   <div className="relative">
                     <input
                       id="sessionTime"
-                      type="text"
-                      placeholder="e.g., 03:30 PM - 05:00 PM IST"
+                      type="time"
+                      min={minTime}
                       value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                      className="w-full h-9 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400 placeholder:text-stone-400"
+                      onClick={(e) => e.currentTarget.showPicker?.()}
+                      onChange={(e) => {
+                        const newTime = e.target.value;
+                        if (date === todayStr && newTime < currentTimeStr) {
+                          showToast('Past Time', 'Please select a future time slot for today', 'warning');
+                          return;
+                        }
+                        setTime(newTime);
+                      }}
+                      className="w-full h-9 pl-8 pr-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400"
                     />
                     <Clock className="w-4 h-4 text-stone-400 absolute left-2.5 top-2.5 pointer-events-none" />
                   </div>
@@ -479,10 +509,7 @@ Rahul Sharma,rahulsharma.srmeee@gmail.com,RA2111005010025,EEE-B,Group 09`;
                 <label className="block text-xs font-medium text-stone-700 mb-1.5">Platform Preset</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
-                    { id: 'meet', label: 'Google Meet' },
-                    { id: 'teams', label: 'MS Teams' },
-                    { id: 'zoom', label: 'Zoom Room' },
-                    { id: 'hybrid', label: 'Hall C (In-Person)' }
+                    { id: 'meet', label: 'Google Meet' }
                   ].map((p) => (
                     <button
                       key={p.id}
@@ -854,6 +881,14 @@ Rahul Sharma,rahulsharma.srmeee@gmail.com,RA2111005010025,EEE-B,Group 09`;
                 onClick={() => {
                   if (!title.trim()) {
                     showToast('Title Required', 'Please enter a session title', 'warning');
+                    return;
+                  }
+                  if (date && date < todayStr) {
+                    showToast('Invalid Date', 'Session date cannot be in the past', 'warning');
+                    return;
+                  }
+                  if (date === todayStr && time && time < currentTimeStr) {
+                    showToast('Invalid Time', 'Session time cannot be in the past for today', 'warning');
                     return;
                   }
                   if (allRecipients.length === 0) {
