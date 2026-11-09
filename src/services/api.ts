@@ -1,4 +1,4 @@
-import { Student, Session, PortalStats, SmtpStatus } from '../types';
+import { Student, Recipient, Session, PortalStats, SmtpStatus } from '../types';
 
 export const api = {
   async getHealth() {
@@ -8,6 +8,16 @@ export const api = {
 
   async getStats(): Promise<PortalStats> {
     const res = await fetch('/api/stats');
+    return res.json();
+  },
+
+  async getRecipients(): Promise<Recipient[]> {
+    const res = await fetch('/api/recipients');
+    return res.json();
+  },
+
+  async getFaculties(): Promise<Recipient[]> {
+    const res = await fetch('/api/faculties');
     return res.json();
   },
 

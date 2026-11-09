@@ -1,12 +1,22 @@
-export interface Student {
+export interface Recipient {
   id: string;
   name: string;
-  regNo: string;
   email: string;
-  batch: string;
-  year: string;
+  regNo?: string;
+  idNo?: string;
+  type: 'student' | 'faculty';
+  category?: string;
+  designation?: string;
+  year?: string;
+  section?: string;
+  department?: string;
+  cohort?: string;
+  phone?: string;
+  batch?: string;
   capstoneGroup?: string;
 }
+
+export type Student = Recipient;
 
 export interface Session {
   id: string;

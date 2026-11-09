@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 
 import { transporter, SMTP_CONFIG } from './config/smtp.js';
 import { sendAcademicEmail, readDispatches } from './services/mailer.js';
+import { EEE_STUDENTS, EEE_FACULTIES, ALL_RECIPIENTS } from './src/data/recipientsData.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,9 +55,10 @@ app.get('/professor_krishnavel.jpg', (req, res) => {
   res.status(404).send('Photo not found');
 });
 
-// Student directory and session store (starts empty; populated only when Professor adds records)
-const DEFAULT_STUDENTS: any[] = [];
+// Department Directory and session store
+const DEFAULT_STUDENTS: any[] = EEE_STUDENTS;
 const DEFAULT_SESSIONS: any[] = [];
+const DEFAULT_RECIPIENTS: any[] = ALL_RECIPIENTS;
 
 let inMemorySessions: any[] = [...DEFAULT_SESSIONS];
 
@@ -86,7 +88,8 @@ function writeSessions(sessions: any[]) {
 function readStudents() {
   try {
     if (fs.existsSync(STUDENTS_DATA_FILE)) {
-      return JSON.parse(fs.readFileSync(STUDENTS_DATA_FILE, 'utf-8'));
+      const data = JSON.parse(fs.readFileSync(STUDENTS_DATA_FILE, 'utf-8'));
+      if (Array.isArray(data) && data.length > 0) return data;
     }
   } catch (err) {
     // Fallback gracefully
@@ -141,6 +144,8 @@ apiRouter.get('/stats', (req, res) => {
     completedSessions: completedCount,
     drafts: draftCount,
     totalStudents: students.length,
+    totalFaculties: EEE_FACULTIES.length,
+    totalRecipients: students.length + EEE_FACULTIES.length,
     totalEmailReach: totalEmailsSent,
     engagementRate: totalEmailsSent > 0 ? '100%' : '0%',
     deliveryRate: totalEmailsSent > 0 ? '100% (SMTP Verified)' : 'Ready (Verified)',
@@ -150,6 +155,17 @@ apiRouter.get('/stats', (req, res) => {
 
 apiRouter.get('/students', (req, res) => {
   res.json(readStudents());
+});
+
+apiRouter.get('/faculties', (req, res) => {
+  res.json(EEE_FACULTIES);
+});
+
+apiRouter.get('/recipients', (req, res) => {
+  const customStudents = readStudents();
+  // Merge custom registered students with faculty
+  const combined = [...customStudents, ...EEE_FACULTIES];
+  res.json(combined);
 });
 
 apiRouter.post('/students', (req, res) => {

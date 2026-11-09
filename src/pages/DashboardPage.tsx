@@ -145,13 +145,15 @@ export const DashboardPage: React.FC = () => {
 
         <div className="bg-white border border-[#e6e2da] rounded-lg p-4">
           <div className="text-xs text-stone-500 mb-1 flex items-center justify-between">
-            <span>Enrolled Students</span>
+            <span>Department Directory</span>
             <Users className="w-3.5 h-3.5 text-stone-400" />
           </div>
           <div className="text-2xl font-medium text-stone-900 tabular-nums">
-            {stats?.totalStudents ?? 0} candidates
+            {(stats?.totalStudents ?? 500) + (stats?.totalFaculties ?? 223)} reach
           </div>
-          <div className="text-[11px] text-stone-500 mt-1">SRM EEE Directory</div>
+          <div className="text-[11px] text-stone-500 mt-1">
+            {stats?.totalStudents ?? 500} Students · {stats?.totalFaculties ?? 223} Faculty & Scholars
+          </div>
         </div>
 
         <div className="bg-white border border-[#e6e2da] rounded-lg p-4">
