@@ -349,13 +349,20 @@ apiRouter.post('/smtp/send', async (req, res) => {
 
 apiRouter.get('/smtp/status', (req, res) => {
   const isConfigured = Boolean(SMTP_CONFIG.auth.user && SMTP_CONFIG.auth.pass);
+  const provider = SMTP_CONFIG.host.includes('resend')
+    ? 'Resend'
+    : SMTP_CONFIG.host.includes('brevo') || SMTP_CONFIG.host.includes('sendinblue')
+    ? 'Brevo'
+    : 'Google';
+
   res.json({
     ready: isConfigured,
+    provider,
     user: SMTP_CONFIG.auth.user,
     host: SMTP_CONFIG.host,
     port: SMTP_CONFIG.port,
     message: isConfigured
-      ? `${SMTP_CONFIG.host.includes('brevo') || SMTP_CONFIG.host.includes('sendinblue') ? 'Brevo' : 'Google'} SMTP relay authenticated and active for Prof. Krishnavel`
+      ? `${provider} SMTP relay authenticated and active for Prof. Krishnavel`
       : 'SMTP relay credentials pending'
   });
 });

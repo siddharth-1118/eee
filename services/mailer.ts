@@ -6,8 +6,9 @@ import { transporter } from '../config/smtp';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const isResend = Boolean(process.env.RESEND_API_KEY || process.env.SMTP_HOST?.includes('resend'));
 const SENDER_NAME = process.env.SMTP_SENDER_NAME || 'Prof. Krishnavel (SRM EEE)';
-const SENDER_EMAIL = process.env.SMTP_FROM || process.env.SMTP_USER || 'srmeeelibraray@gmail.com';
+const SENDER_EMAIL = process.env.SMTP_FROM || (isResend ? 'onboarding@resend.dev' : (process.env.SMTP_USER || 'srmeeelibraray@gmail.com'));
 const DISPATCH_LOG_FILE = path.join(__dirname, '..', 'data', 'dispatches.json');
 const PROF_PHOTO_PATH = path.join(__dirname, '..', 'public', 'professor_krishnavel.jpg');
 

@@ -7,21 +7,22 @@ import { fileURLToPath as fileURLToPath2 } from "url";
 
 // config/smtp.ts
 import nodemailer from "nodemailer";
-var host = process.env.SMTP_HOST || "smtp.gmail.com";
-var port = parseInt(process.env.SMTP_PORT || (host.includes("brevo") || host.includes("sendinblue") ? "587" : "465"), 10);
+var resendApiKey = process.env.RESEND_API_KEY;
+var isResend = Boolean(resendApiKey || process.env.SMTP_HOST?.includes("resend"));
+var host = isResend ? "smtp.resend.com" : process.env.SMTP_HOST || "smtp.gmail.com";
+var port = parseInt(process.env.SMTP_PORT || "465", 10);
 var SMTP_CONFIG = {
   host,
   port,
   secure: port === 465,
-  // SSL for 465, TLS/STARTTLS for 587
+  // SSL for 465, TLS for 587
   auth: {
-    user: process.env.SMTP_USER || "srmeeelibraray@gmail.com",
-    pass: process.env.SMTP_PASS || "jzpvoyjarrtrpbeb"
+    user: isResend ? "resend" : process.env.SMTP_USER || "srmeeelibraray@gmail.com",
+    pass: resendApiKey || process.env.SMTP_PASS || "jzpvoyjarrtrpbeb"
   }
 };
 var transporter = nodemailer.createTransport({
   ...SMTP_CONFIG,
-  // Brevo TLS compatibility settings
   tls: {
     rejectUnauthorized: false
   }
@@ -33,8 +34,9 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 var __filename = fileURLToPath(import.meta.url);
 var __dirname = path.dirname(__filename);
+var isResend2 = Boolean(process.env.RESEND_API_KEY || process.env.SMTP_HOST?.includes("resend"));
 var SENDER_NAME = process.env.SMTP_SENDER_NAME || "Prof. Krishnavel (SRM EEE)";
-var SENDER_EMAIL = process.env.SMTP_FROM || process.env.SMTP_USER || "srmeeelibraray@gmail.com";
+var SENDER_EMAIL = process.env.SMTP_FROM || (isResend2 ? "onboarding@resend.dev" : process.env.SMTP_USER || "srmeeelibraray@gmail.com");
 var DISPATCH_LOG_FILE = path.join(__dirname, "..", "data", "dispatches.json");
 var PROF_PHOTO_PATH = path.join(__dirname, "..", "public", "professor_krishnavel.jpg");
 function readDispatches() {
@@ -8742,12 +8744,14 @@ apiRouter.post("/smtp/send", async (req, res) => {
 });
 apiRouter.get("/smtp/status", (req, res) => {
   const isConfigured = Boolean(SMTP_CONFIG.auth.user && SMTP_CONFIG.auth.pass);
+  const provider = SMTP_CONFIG.host.includes("resend") ? "Resend" : SMTP_CONFIG.host.includes("brevo") || SMTP_CONFIG.host.includes("sendinblue") ? "Brevo" : "Google";
   res.json({
     ready: isConfigured,
+    provider,
     user: SMTP_CONFIG.auth.user,
     host: SMTP_CONFIG.host,
     port: SMTP_CONFIG.port,
-    message: isConfigured ? `${SMTP_CONFIG.host.includes("brevo") || SMTP_CONFIG.host.includes("sendinblue") ? "Brevo" : "Google"} SMTP relay authenticated and active for Prof. Krishnavel` : "SMTP relay credentials pending"
+    message: isConfigured ? `${provider} SMTP relay authenticated and active for Prof. Krishnavel` : "SMTP relay credentials pending"
   });
 });
 apiRouter.post("/auth/login", (req, res) => {
