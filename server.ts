@@ -355,7 +355,7 @@ apiRouter.get('/smtp/status', (req, res) => {
     host: SMTP_CONFIG.host,
     port: SMTP_CONFIG.port,
     message: isConfigured
-      ? 'Google SMTP relay authenticated and active for Prof. Krishnavel'
+      ? `${SMTP_CONFIG.host.includes('brevo') || SMTP_CONFIG.host.includes('sendinblue') ? 'Brevo' : 'Google'} SMTP relay authenticated and active for Prof. Krishnavel`
       : 'SMTP relay credentials pending'
   });
 });

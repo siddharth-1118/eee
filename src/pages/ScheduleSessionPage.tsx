@@ -506,7 +506,7 @@ SHRUTI SINGH,ss7759@srmist.edu.in,RA2411005010026,Student,III Year EEE-B`;
       if (res.dispatchResult && res.dispatchResult.success) {
         showToast(
           'Dispatches Delivered',
-          `Sent to ${res.dispatchResult.deliveredCount} recipient(s) via Google SMTP (srmeeelibraray@gmail.com)!`,
+          `Sent to ${res.dispatchResult.deliveredCount} recipient(s) via SMTP Relay!`,
           'success',
           5000
         );
@@ -1370,7 +1370,7 @@ SHRUTI SINGH,ss7759@srmist.edu.in,RA2411005010026,Student,III Year EEE-B`;
             <div className="flex items-center justify-between pb-3 border-b border-stone-200">
               <span className="text-xs font-semibold text-stone-900">Pre-Flight Dispatch Preview</span>
               <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                Google SMTP SSL:465
+                Verified SMTP Relay
               </span>
             </div>
 
@@ -1493,7 +1493,7 @@ SHRUTI SINGH,ss7759@srmist.edu.in,RA2411005010026,Student,III Year EEE-B`;
                 className="rounded text-stone-900 border-stone-300"
               />
               <label htmlFor="chkSendRealEmail" className="text-xs text-stone-700 font-medium cursor-pointer">
-                Dispatch real email notifications via Google SMTP immediately
+                Dispatch real email notifications via authenticated SMTP immediately
               </label>
             </div>
 
@@ -1513,7 +1513,7 @@ SHRUTI SINGH,ss7759@srmist.edu.in,RA2411005010026,Student,III Year EEE-B`;
                 className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium rounded transition-colors flex items-center gap-1.5"
               >
                 <Send className="w-3.5 h-3.5" />
-                <span>{isDispatching ? 'Dispatching via Google SMTP...' : 'Confirm & Dispatch via SMTP'}</span>
+                <span>{isDispatching ? 'Dispatching via SMTP Relay...' : 'Confirm & Dispatch via SMTP'}</span>
               </button>
             </div>
           </div>
