@@ -30,7 +30,7 @@ export function writeDispatches(logs: any[]) {
 
 export function generateIcsCalendar(session: any) {
   const title = session.title || 'Academic Advisory Session';
-  const meetUrl = session.link || 'https://meet.google.com/eng-krish-pract';
+  const meetUrl = session.link || 'https://meet.zoho.in/nvzd-cbn-fyn';
   const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
   const uid = `acad-${Date.now()}@srmist.edu.in`;
 
@@ -58,7 +58,7 @@ export function generateHtmlEmail(session: any, recipientEmail: string) {
   const title = session.title || 'Advanced Industrial Robotics & Digital Twin Architecture · Seminar IV';
   const date = session.date || 'Thursday, Oct 24, 2024';
   const time = session.time || '03:30 PM - 05:00 PM IST';
-  const link = session.link || 'https://meet.google.com/eng-krish-pract';
+  const link = session.link || 'https://meet.zoho.in/nvzd-cbn-fyn';
   const notes = session.notes || session.announcementBody || 'Please review preparatory notes before attending the session.';
 
   return `
@@ -117,7 +117,7 @@ export function generateHtmlEmail(session: any, recipientEmail: string) {
 
         <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e7e5e4;">
           <a href="${link}" style="display: inline-block; background-color: #1c1917; color: #ffffff; text-decoration: none; font-size: 12px; font-weight: 500; padding: 8px 16px; border-radius: 4px;" target="_blank">
-            Join Teleconference Gateway
+            Join Teleconference ${link.includes('zoho') ? '(Zoho Meeting)' : link.includes('google') ? '(Google Meet)' : 'Gateway'}
           </a>
         </div>
       </div>

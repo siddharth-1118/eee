@@ -54,7 +54,7 @@ export const DashboardPage: React.FC = () => {
           title: 'Quick Faculty Verification Dispatch',
           date: 'Academic Term 2024-25',
           time: 'Instant Verification',
-          link: 'https://meet.google.com/eng-krish-pract',
+          link: 'https://meet.zoho.in/nvzd-cbn-fyn',
           notes: 'Automated SMTP self-test initiated from React Faculty Dashboard.'
         }
       });

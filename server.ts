@@ -272,9 +272,9 @@ apiRouter.post('/sessions', async (req, res) => {
     time: time || 'Scheduled Time',
     timeDisplay: timeDisplay || date || 'Scheduled Time',
     duration: duration || '60 min advisory',
-    platform: platform || 'meet',
-    platformName: platformName || 'Google Meet',
-    link: link || 'https://meet.google.com/eng-krish-pract',
+    platform: platform || 'zoho',
+    platformName: platformName || (link && link.includes('zoho') ? 'Zoho Meeting' : 'Zoho Meeting'),
+    link: link || 'https://meet.zoho.in/nvzd-cbn-fyn',
     status: 'upcoming',
     recipientGroup: recipientGroup || 'both',
     recipientText: recipientText || 'All (Faculty + Students)',
@@ -336,7 +336,7 @@ apiRouter.post('/smtp/send', async (req, res) => {
         title: 'Academic Advisory Session',
         date: 'Thursday, Oct 24, 2024',
         time: '03:30 PM - 05:00 PM IST',
-        link: 'https://meet.google.com/eng-krish-pract'
+        link: 'https://meet.zoho.in/nvzd-cbn-fyn'
       }
     });
 

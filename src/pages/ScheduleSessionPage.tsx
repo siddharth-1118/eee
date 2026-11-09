@@ -64,7 +64,7 @@ export const ScheduleSessionPage: React.FC = () => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [link, setLink] = useState('');
-  const [platform, setPlatform] = useState('meet');
+  const [platform, setPlatform] = useState('zoho');
   const [notes, setNotes] = useState('');
 
   // Restrict past dates & times
@@ -414,8 +414,18 @@ SHRUTI SINGH,ss7759@srmist.edu.in,RA2411005010026,Student,III Year EEE-B`;
 
   const handlePlatformChange = (pId: string) => {
     setPlatform(pId);
-    if (!link) {
-      if (pId === 'meet') setLink('https://meet.google.com/eng-krish-pract');
+    if (pId === 'zoho') {
+      if (!link || link.includes('google.com') || link.includes('teams.microsoft')) {
+        setLink('https://meet.zoho.in/nvzd-cbn-fyn');
+      }
+    } else if (pId === 'meet') {
+      if (!link || link.includes('zoho.in') || link.includes('teams.microsoft')) {
+        setLink('https://meet.google.com/eng-krish-pract');
+      }
+    } else if (pId === 'teams') {
+      if (!link || link.includes('zoho.in') || link.includes('google.com')) {
+        setLink('https://teams.microsoft.com/l/meetup-join/academic-portal');
+      }
     }
   };
 
@@ -484,7 +494,7 @@ SHRUTI SINGH,ss7759@srmist.edu.in,RA2411005010026,Student,III Year EEE-B`;
         recipientGroup: cohortTag,
         date: date || 'Scheduled Date',
         time: time || 'Scheduled Time',
-        link: link || 'https://meet.google.com/eng-krish-pract',
+        link: link || 'https://meet.zoho.in/nvzd-cbn-fyn',
         notes,
         status: 'upcoming',
         sendMail: sendRealEmail,
@@ -657,14 +667,16 @@ SHRUTI SINGH,ss7759@srmist.edu.in,RA2411005010026,Student,III Year EEE-B`;
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="text-xs font-medium text-stone-700" htmlFor="meetingLink">
-                    Teleconference URL
+                    Teleconference URL (Zoho Meeting)
                   </label>
-                  <span className="text-[11px] text-stone-500 font-mono">Google Meet</span>
+                  <span className="text-[11px] text-stone-500 font-mono">
+                    {platform === 'zoho' ? 'Zoho Meeting' : platform === 'meet' ? 'Google Meet' : 'MS Teams'}
+                  </span>
                 </div>
                 <input
                   id="meetingLink"
                   type="text"
-                  placeholder="https://meet.google.com/eng-krish-pract"
+                  placeholder="e.g., https://meet.zoho.in/nvzd-cbn-fyn"
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
                   className="w-full h-9 px-3 bg-white text-stone-900 border border-stone-200 rounded text-xs focus:outline-none focus:border-stone-400 font-mono"
@@ -673,21 +685,23 @@ SHRUTI SINGH,ss7759@srmist.edu.in,RA2411005010026,Student,III Year EEE-B`;
 
               <div>
                 <label className="block text-xs font-medium text-stone-700 mb-1.5">Platform Preset</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {[
-                    { id: 'meet', label: 'Google Meet (Default)' }
+                    { id: 'zoho', label: 'Zoho Meeting (Default)', badge: 'meet.zoho.in' },
+                    { id: 'meet', label: 'Google Meet', badge: 'meet.google.com' },
+                    { id: 'teams', label: 'MS Teams', badge: 'teams.microsoft' }
                   ].map((p) => (
                     <button
                       key={p.id}
                       type="button"
                       onClick={() => handlePlatformChange(p.id)}
-                      className={`h-8 px-3 rounded text-xs font-medium transition-colors border ${
+                      className={`h-8 px-2.5 rounded text-xs font-medium transition-colors border flex items-center justify-between ${
                         platform === p.id
                           ? 'bg-stone-900 text-white border-stone-900'
                           : 'bg-white text-stone-700 border-stone-200 hover:border-stone-300'
                       }`}
                     >
-                      {p.label}
+                      <span>{p.label}</span>
                     </button>
                   ))}
                 </div>
@@ -1412,12 +1426,12 @@ SHRUTI SINGH,ss7759@srmist.edu.in,RA2411005010026,Student,III Year EEE-B`;
 
               <div className="pt-1">
                 <a
-                  href={link.startsWith('http') ? link : '#'}
+                  href={link.startsWith('http') ? link : (link ? `https://${link}` : 'https://meet.zoho.in/nvzd-cbn-fyn')}
                   target="_blank"
                   rel="noreferrer"
-                  className="block w-full py-2 bg-stone-900 text-white text-center rounded text-xs font-medium"
+                  className="block w-full py-2 bg-stone-900 hover:bg-stone-800 text-white text-center rounded text-xs font-medium transition-colors"
                 >
-                  Join Teleconference (Google Meet)
+                  Join Teleconference ({link.includes('zoho') || platform === 'zoho' ? 'Zoho Meeting' : platform === 'meet' ? 'Google Meet' : 'MS Teams'})
                 </a>
               </div>
             </div>

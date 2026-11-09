@@ -53,7 +53,7 @@ export const PreviewConfirmationPage: React.FC = () => {
           title: 'Advanced Industrial Robotics & Digital Twin Architecture · Seminar IV',
           date: 'Thursday, Oct 24, 2024',
           time: '03:30 PM - 05:00 PM IST',
-          link: 'https://meet.google.com/eng-krish-pract',
+          link: 'https://meet.zoho.in/nvzd-cbn-fyn',
           notes: 'Pre-flight verified dispatch distributed via Google SMTP relay. Mandated for enrolled Capstone candidates.'
         }
       });
@@ -138,12 +138,12 @@ export const PreviewConfirmationPage: React.FC = () => {
             <div>
               <span className="text-stone-500">Teleconference Gateway:</span>
               <a
-                href="https://meet.google.com/eng-krish-pract"
+                href="https://meet.zoho.in/nvzd-cbn-fyn"
                 target="_blank"
                 rel="noreferrer"
                 className="font-medium text-blue-700 hover:underline ml-1 inline-flex items-center gap-0.5"
               >
-                Google Meet <ExternalLink className="w-3 h-3" />
+                Zoho Meeting <ExternalLink className="w-3 h-3" />
               </a>
             </div>
             <div>

@@ -45,7 +45,7 @@ function writeDispatches(logs) {
 }
 function generateIcsCalendar(session) {
   const title = session.title || "Academic Advisory Session";
-  const meetUrl = session.link || "https://meet.google.com/eng-krish-pract";
+  const meetUrl = session.link || "https://meet.zoho.in/nvzd-cbn-fyn";
   const stamp = (/* @__PURE__ */ new Date()).toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
   const uid = `acad-${Date.now()}@srmist.edu.in`;
   return [
@@ -71,7 +71,7 @@ function generateHtmlEmail(session, recipientEmail) {
   const title = session.title || "Advanced Industrial Robotics & Digital Twin Architecture \xB7 Seminar IV";
   const date = session.date || "Thursday, Oct 24, 2024";
   const time = session.time || "03:30 PM - 05:00 PM IST";
-  const link = session.link || "https://meet.google.com/eng-krish-pract";
+  const link = session.link || "https://meet.zoho.in/nvzd-cbn-fyn";
   const notes = session.notes || session.announcementBody || "Please review preparatory notes before attending the session.";
   return `
 <!DOCTYPE html>
@@ -129,7 +129,7 @@ function generateHtmlEmail(session, recipientEmail) {
 
         <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e7e5e4;">
           <a href="${link}" style="display: inline-block; background-color: #1c1917; color: #ffffff; text-decoration: none; font-size: 12px; font-weight: 500; padding: 8px 16px; border-radius: 4px;" target="_blank">
-            Join Teleconference Gateway
+            Join Teleconference ${link.includes("zoho") ? "(Zoho Meeting)" : link.includes("google") ? "(Google Meet)" : "Gateway"}
           </a>
         </div>
       </div>
@@ -8666,9 +8666,9 @@ apiRouter.post("/sessions", async (req, res) => {
     time: time || "Scheduled Time",
     timeDisplay: timeDisplay || date || "Scheduled Time",
     duration: duration || "60 min advisory",
-    platform: platform || "meet",
-    platformName: platformName || "Google Meet",
-    link: link || "https://meet.google.com/eng-krish-pract",
+    platform: platform || "zoho",
+    platformName: platformName || (link && link.includes("zoho") ? "Zoho Meeting" : "Zoho Meeting"),
+    link: link || "https://meet.zoho.in/nvzd-cbn-fyn",
     status: "upcoming",
     recipientGroup: recipientGroup || "both",
     recipientText: recipientText || "All (Faculty + Students)",
@@ -8722,7 +8722,7 @@ apiRouter.post("/smtp/send", async (req, res) => {
         title: "Academic Advisory Session",
         date: "Thursday, Oct 24, 2024",
         time: "03:30 PM - 05:00 PM IST",
-        link: "https://meet.google.com/eng-krish-pract"
+        link: "https://meet.zoho.in/nvzd-cbn-fyn"
       }
     });
     res.json(result);

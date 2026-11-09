@@ -26,7 +26,7 @@ export const EmailTemplatesPage: React.FC = () => {
       <tr><td>
         <h2 style="font-size:16px;color:#1c1917;margin:0 0 8px 0;">Academic Advisory Session & Teleconference Notice</h2>
         <p style="font-size:13px;color:#57534e;line-height:1.5;">Date: Scheduled Date & Time (IST)</p>
-        <p style="font-size:13px;color:#57534e;"><a href="https://meet.google.com/eng-krish-pract" style="color:#1e3a8a;font-weight:600;">Join Teleconference Gateway</a></p>
+        <p style="font-size:13px;color:#57534e;"><a href="https://meet.zoho.in/nvzd-cbn-fyn" style="color:#1e3a8a;font-weight:600;">Join Teleconference (Zoho Meeting)</a></p>
         <p style="font-size:11px;color:#78716c;margin-top:16px;">Prof. of Practice Engr. Krishnavel · SRMIST EEE</p>
       </td></tr>
     </table>
@@ -52,8 +52,8 @@ export const EmailTemplatesPage: React.FC = () => {
       `DTSTAMP:${stamp}`,
       `DTSTART:${stamp}`,
       'SUMMARY:Official Academic Advisory Session',
-      'DESCRIPTION:Conducted by Prof. Krishnavel, Senior Faculty Advisor, SRM EEE.\\nMeeting: https://meet.google.com/eng-krish-pract',
-      'LOCATION:https://meet.google.com/eng-krish-pract',
+      'DESCRIPTION:Conducted by Prof. Krishnavel, Senior Faculty Advisor, SRM EEE.\\nMeeting: https://meet.zoho.in/nvzd-cbn-fyn',
+      'LOCATION:https://meet.zoho.in/nvzd-cbn-fyn',
       'ORGANIZER;CN="Prof. Krishnavel":mailto:srmeeelibraray@gmail.com',
       'STATUS:CONFIRMED',
       'END:VEVENT',
@@ -83,7 +83,7 @@ export const EmailTemplatesPage: React.FC = () => {
           title: 'Advanced Industrial Robotics & Digital Twin Architecture · Seminar IV',
           date: 'Thursday, Oct 24, 2024',
           time: '03:30 PM - 05:00 PM IST',
-          link: 'https://meet.google.com/eng-krish-pract',
+          link: 'https://meet.zoho.in/nvzd-cbn-fyn',
           notes: 'Preparatory brief on kinematic inverse solvers and digital twin ROS2 testbed in Lab 4B. Mandatory for Capstone Groups 04, 09, and 12.'
         }
       });
@@ -218,20 +218,20 @@ export const EmailTemplatesPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-stone-500 block text-[11px]">Gateway Location:</span>
-                  <span className="font-medium text-stone-900">Google Meet / Lab 4B Mechatronics Wing</span>
+                  <span className="font-medium text-stone-900">Zoho Meeting / Lab 4B Mechatronics Wing</span>
                 </div>
               </div>
 
               <div className="pt-2 border-t border-stone-200/70 flex items-center justify-between">
                 <a
-                  href="https://meet.google.com/eng-krish-pract"
+                  href="https://meet.zoho.in/nvzd-cbn-fyn"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-medium transition-colors"
                 >
-                  Join Teleconference Gateway <ExternalLink className="w-3 h-3" />
+                  Join Teleconference (Zoho Meeting) <ExternalLink className="w-3 h-3" />
                 </a>
-                <span className="text-[11px] text-stone-500 font-mono">ID: eng-krish-pract</span>
+                <span className="text-[11px] text-stone-500 font-mono">ID: nvzd-cbn-fyn</span>
               </div>
             </div>
 
